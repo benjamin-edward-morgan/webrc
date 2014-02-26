@@ -1,29 +1,25 @@
-package webrc.robot.notifier;
+package webrc.robot.controller;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import webrc.server.Sleeper;
+class SocketController extends Controller {
 
-public class SocketNotifier extends AbstractNotifier {
+	String host;
+	int port;
 
-	String host = null;
-	int port = 0;
-
-	public SocketNotifier(String host, int port, Map<String, Object> defaults/*, String... additionalParams*/) {
-		super(defaults);
-		this.host = host;
-		this.port = port;
-
-		begin();
+	public SocketController() {
 	}
 
-	private void begin() {
+    @PostConstruct
+	private void init() {
+
+        //begin connection to server
 
 		Thread t = new Thread(new Runnable() {
 
@@ -40,16 +36,14 @@ public class SocketNotifier extends AbstractNotifier {
 						for (;;) {
 							Map<String, Object> values = JsonToMap(streamToString(is));
 
-							//TODO: sleep by topic
-							//Sleeper.sleep(null, 20000);
 							if(s.isClosed() || values == null)
 							{
 								System.out.println("socket closed");
 								break;
 
 							}
-							
-							update(values);
+
+                            publish(values);
 						}
 
 					} catch (UnknownHostException e) {
@@ -120,4 +114,16 @@ public class SocketNotifier extends AbstractNotifier {
 		return s.hasNext() ? s.next() : "";
 	}
 
+    @Override
+    protected void notify(Map<String, Object> values) {
+        //TODO: relay sensor values to server
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 }

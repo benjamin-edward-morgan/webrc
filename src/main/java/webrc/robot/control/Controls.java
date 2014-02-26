@@ -1,11 +1,10 @@
 package webrc.robot.control;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import webrc.robot.RobotLog;
-import webrc.robot.control.Control;
-import webrc.robot.notifier.NotifierListener;
+import webrc.robot.notifier.Subscriber;
+
+import javax.annotation.PostConstruct;
+import java.util.Map;
 
 /**
  * A controller contains one or more controls and dispatches changes to them
@@ -13,17 +12,24 @@ import webrc.robot.notifier.NotifierListener;
  * @author benjaminmorgan
  * 
  */
-public class Controls implements NotifierListener {
+public class Controls extends Subscriber {
 
 	RobotLog log = RobotLog.getLog(this);
 
-	private Map<String, Control<?>> controls = new HashMap<String, Control<?>>();
+	private Map<String, Control<?>> controls = null;
 
-	public void add(String key, Control<?> controller) {
-		controls.put(key, controller);
-	}
+    public void setControls(Map<String, Control<?>> controls) {
+        this.controls = controls;
+    }
 
-	public void changed(Map<String, Object> values) {
+    @PostConstruct
+    public void init()
+    {
+        //subscribe to each control based on the name in the autowired map
+        subscribe(controls.keySet());
+    }
+
+	public void notify(Map<String, Object> values) {
 		if (values != null)
 			for (Object key : values.keySet()) {
 
@@ -41,5 +47,4 @@ public class Controls implements NotifierListener {
 				}
 			}
 	}
-
 }

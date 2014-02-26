@@ -1,19 +1,13 @@
 package webrc.robot.control;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
 
 public class PCA9685pinControl extends Control<Float> {
 	
-//	@Autowired
-//    @Value("")
-	PCA9685Control pca9685Control;
 
-//    @Autowired
-//    @Value("")
+	PCA9685Control pca9685Control;
    	int pin;
 	
 	public PCA9685pinControl()

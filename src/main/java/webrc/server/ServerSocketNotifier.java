@@ -1,27 +1,12 @@
 package webrc.server;
 
-import java.awt.Container;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JSlider;
-import javax.swing.SpringLayout;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import webrc.robot.notifier.AbstractNotifier;
 
 /**
  * Accepts socket connections on a specified port and pushes json data packets

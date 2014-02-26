@@ -4,22 +4,67 @@
 
 <beans>
 
+    <!--PWM Controller Board-->
+
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
         <property name="device" value="0x40"/>
     </bean>
 
+
+    <!--Pan Servo-->
+
     <bean id="panPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="15"/>
     </bean>
-
     <bean id="panLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
         <constructor-arg index="2" value="0"/>
         <constructor-arg index="3" value="1"/>
         <constructor-arg index="4" ref="panPwmControl"/>
+    </bean>
+
+
+    <!--Tilt Servo-->
+
+    <bean id="tiltPwmControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="14"/>
+    </bean>
+    <bean id="tiltLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0"/>
+        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="4" ref="tiltPwmControl"/>
+    </bean>
+
+
+    <!--all top-level controls mapped to names-->
+
+    <bean id="controls" class="webrc.robot.control.Controls">
+        <property name="controls">
+            <map>
+                <entry key="pan" value-ref="panLinearTransformControl" />
+                <entry key="tilt" value-ref="tiltLinearTransformControl" />
+            </map>
+        </property>
+    </bean>
+
+
+    <!--Brokers messages between publishers and subscribers-->
+
+    <bean id="messageService" class="webrc.robot.notifier.MessageService">
+    </bean>
+
+
+    <!--controllers are both publishers and subscribers-->
+
+    <bean id="socketController" class="webrc.robot.controller.SocketController">
+        <property name="host" value="localhost"/>
+        <property name="port" value="8080"/>
     </bean>
 
 

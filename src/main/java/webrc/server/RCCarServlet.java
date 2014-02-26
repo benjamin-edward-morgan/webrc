@@ -1,15 +1,7 @@
 package webrc.server;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * ?action=set&driveX=-10&driveY=8&camX=4&camY=9
@@ -25,63 +17,63 @@ import javax.servlet.http.HttpServletResponse;
  * @author benjaminmorgan
  * 
  */
-@WebServlet("/rccar")
-public class RCCarServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	
-	ServerSocketNotifier ssn = ServerSocketNotifier.getSSN();
-
-	public RCCarServlet() {
-		super();
-	}
-	
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{
-		doGet(request, response);
-	}
-	
-	@Override
-	public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{
-		doGet(request, response);
-	}
-
-	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-	{
-		//super.doGet(request, response);
-				
-		Integer driveX = null;
-		Integer driveY = null;
-		Integer camX = null;
-		Integer camY = null;
-		String key = null;
-		
-
-
-		try {
-			driveX = Integer.parseInt(request.getParameter("driveX"));
-			driveY = Integer.parseInt(request.getParameter("driveY"));
-			camX = Integer.parseInt(request.getParameter("camX"));
-			camY = Integer.parseInt(request.getParameter("camY"));
-			key = request.getParameter("key");
-		} catch (Exception e) {
-
-		}
-		
-		System.out.println(driveX + "," + driveY + "," + camX + "," + camY + "," + key);
-
-		Map<String, Object> m = new HashMap<String, Object>();
-		
-		m.put("driveX", driveX);
-		m.put("driveY", driveY);
-		m.put("camX", camX);
-		m.put("camY", camY);
-		
-		ssn.update(m);
-		
-		response.flushBuffer();
+//@WebServlet("/rccar")
+public class RCCarServlet /*extends HttpServlet*/ {
+//	private static final long serialVersionUID = 1L;
+//
+//	ServerSocketNotifier ssn = ServerSocketNotifier.getSSN();
+//
+//	public RCCarServlet() {
+//		super();
+//	}
+//
+//	@Override
+//	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+//	{
+//		doGet(request, response);
+//	}
+//
+//	@Override
+//	public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+//	{
+//		doGet(request, response);
+//	}
+//
+//	@Override
+//	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+//	{
+//		//super.doGet(request, response);
+//
+//		Integer driveX = null;
+//		Integer driveY = null;
+//		Integer camX = null;
+//		Integer camY = null;
+//		String key = null;
+//
+//
+//
+//		try {
+//			driveX = Integer.parseInt(request.getParameter("driveX"));
+//			driveY = Integer.parseInt(request.getParameter("driveY"));
+//			camX = Integer.parseInt(request.getParameter("camX"));
+//			camY = Integer.parseInt(request.getParameter("camY"));
+//			key = request.getParameter("key");
+//		} catch (Exception e) {
+//
+//		}
+//
+//		System.out.println(driveX + "," + driveY + "," + camX + "," + camY + "," + key);
+//
+//		Map<String, Object> m = new HashMap<String, Object>();
+//
+//		m.put("driveX", driveX);
+//		m.put("driveY", driveY);
+//		m.put("camX", camX);
+//		m.put("camY", camY);
+//
+//		ssn.update(m);
+//
+//		response.flushBuffer();
 
 //		boolean clientStateInSync = false;
 //		if (driveX != null && driveY != null && camX != null && camY != null && key!=null) {
@@ -151,7 +143,7 @@ public class RCCarServlet extends HttpServlet {
 
 		
 //		System.out.println("buffer flushed");
-	}
+//	}
 
 	public String toJson(Map<String, Object> map) {
 		StringBuilder sb = new StringBuilder("{");
