@@ -1,6 +1,6 @@
-package webrc.robot.notifier;
+package webrc.messaging;
 
-import webrc.robot.util.ManyToManyMap;
+import webrc.util.ManyToManyMap;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,24 +14,24 @@ import java.util.Set;
  */
 public class MessageService {
 
-    ManyToManyMap<String, Subscriber> keySubscribers = new ManyToManyMap<String, Subscriber>();
+    ManyToManyMap<String, Pubscriber> keySubscribers = new ManyToManyMap<String, Pubscriber>();
 
 
     public void publish(Map<String, Object> values)
     {
-        Set<Subscriber> subscribers = keySubscribers.getBforA(values.keySet());
-        for(Subscriber subscriber : subscribers)
+        Set<Pubscriber> subscribers = keySubscribers.getBforA(values.keySet());
+        for(Pubscriber subscriber : subscribers)
         {
             subscriber.notify(values);
         }
     }
 
-    public void subscribe(Set<String> keys, Subscriber subscriber)
+    public void subscribe(Set<String> keys, Pubscriber subscriber)
     {
         keySubscribers.put(keys, subscriber);
     }
 
     //TODO: subscribeAll
-    //public void subscribeAll(Subscriber subscriber) {}
+    //public void subscribeAll(Pubscriber subscriber) {}
 
 }

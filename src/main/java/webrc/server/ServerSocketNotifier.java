@@ -1,5 +1,9 @@
 package webrc.server;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -12,160 +16,160 @@ import java.util.Map;
  * Accepts socket connections on a specified port and pushes json data packets
  * to clients immediately after connection, then periodically and immediately
  * after notified that parameters have changed
- * 
+ *
  * @author benjaminmorgan
- * 
  */
 public class ServerSocketNotifier {
-	//
-	// public static void main(String[] args) {
-	// Map<String, Object> values = new HashMap<String, Object>();
-	// values.put("pan", 0);
-	// values.put("tilt", 0);
-	//
-	// final ServerSocketNotifier ssn = new ServerSocketNotifier(8081, values);
-	//
-	//
-	// JFrame jframe = new JFrame("sliders");
-	//
-	// final JSlider pan = new JSlider(-100,100,50);
-	// pan.addChangeListener(new ChangeListener(){
-	// @Override
-	// public void stateChanged(ChangeEvent arg0) {
-	// Map<String, Object> values = new HashMap<String, Object>();
-	// values.put("pan", pan.getValue());
-	// ssn.update(values);
-	// }});
-	//
-	// final JSlider tilt = new JSlider(-100,100,50);
-	// tilt.addChangeListener(new ChangeListener(){
-	// @Override
-	// public void stateChanged(ChangeEvent arg0) {
-	// Map<String, Object> values = new HashMap<String, Object>();
-	// values.put("tilt", tilt.getValue());
-	// ssn.update(values);
-	// }});
-	//
-	// Container container = new Container();
-	// container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-	//
-	// container.add(pan);
-	// container.add(tilt);
-	//
-	// jframe.add(container);
-	//
-	// jframe.setVisible(true);
-	//
-	// jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	//
-	// }
 
-	private static ServerSocketNotifier SSN = null;
+    public static void main(String[] args) {
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("pan", 0);
+        values.put("tilt", 0);
 
-	public static ServerSocketNotifier getSSN() {
-		if (SSN == null) {
-			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("pan", 0);
-			values.put("tilt", 0);
+        final ServerSocketNotifier ssn = new ServerSocketNotifier(8081, values);
 
-			SSN = new ServerSocketNotifier(8081, values);
-		}
 
-		return SSN;
+        JFrame jframe = new JFrame("sliders");
 
-	}
+        final JSlider pan = new JSlider(-100, 100, 50);
+        pan.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent arg0) {
+                Map<String, Object> values = new HashMap<String, Object>();
+                values.put("pan", pan.getValue());
+                ssn.update(values);
+            }
+        });
 
-	
-	
-	int port = -1;
+        final JSlider tilt = new JSlider(-100, 100, 50);
+        tilt.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent arg0) {
+                Map<String, Object> values = new HashMap<String, Object>();
+                values.put("tilt", tilt.getValue());
+                ssn.update(values);
+            }
+        });
 
-	Map<String, Object> values = null;
+        Container container = new Container();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-	final static int pollTimeout = 5000; // ms
+        container.add(pan);
+        container.add(tilt);
 
-	public ServerSocketNotifier(int port, Map<String, Object> defaults) {
+        jframe.add(container);
 
-		values = defaults;
-		this.port = port;
+        jframe.setVisible(true);
 
-		new Thread(new Runnable() {
+        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-			@Override
-			public void run() {
-				acceptConnections();
-			}
-		}).start();
-	}
+    }
 
-	public void update(Map<String, Object> values) {
-		this.values.putAll(values);
-		Sleeper.interruptSleepingThreads(null);
-	}
+    private static ServerSocketNotifier SSN = null;
 
-	private void acceptConnections() {
+    public static ServerSocketNotifier getSSN() {
+        if (SSN == null) {
+            Map<String, Object> values = new HashMap<String, Object>();
+            values.put("pan", 0);
+            values.put("tilt", 0);
 
-		try {
-			ServerSocket ss = new ServerSocket(8081);
+            SSN = new ServerSocketNotifier(8081, values);
+        }
 
-			for (;;) {
+        return SSN;
 
-				try {
+    }
 
-					Socket socket = ss.accept();
 
-					System.out.println("Connection Accepted!");
-					final OutputStream outputStream = socket.getOutputStream();
+    int port = -1;
 
-					// TODO: read hashed car serial number
-					// socket.getInputStream();
+    Map<String, Object> values = null;
 
-					Thread t = new Thread(new Runnable() {
+    final static int pollTimeout = 5000; // ms
 
-						@Override
-						public void run() {
+    public ServerSocketNotifier(int port, Map<String, Object> defaults) {
 
-							try {
-								for (;;) {
+        values = defaults;
+        this.port = port;
 
-									outputStream.write((toJson(values) + "\n").getBytes());
-									System.out.println(toJson(values));
-									Sleeper.sleep("car1", pollTimeout);
-								}
+        new Thread(new Runnable() {
 
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+            @Override
+            public void run() {
+                acceptConnections();
+            }
+        }).start();
+    }
 
-						}
-					}, "Socket Feeder");
+    public void update(Map<String, Object> values) {
+        this.values.putAll(values);
+        Sleeper.interruptSleepingThreads(null);
+    }
 
-					t.setDaemon(true);
-					t.start();
+    private void acceptConnections() {
 
-				} catch (IOException e) {
-					e.printStackTrace();
+        try {
+            ServerSocket ss = new ServerSocket(8081);
 
-				}
+            for (; ; ) {
 
-			}
+                try {
 
-		} catch (IOException e) {
-			e.printStackTrace();
+                    Socket socket = ss.accept();
 
-		}
+                    System.out.println("Connection Accepted!");
+                    final OutputStream outputStream = socket.getOutputStream();
 
-	}
+                    // TODO: read hashed car serial number
+                    // socket.getInputStream();
 
-	public String toJson(Map<String, Object> map) {
-		if (map == null)
-			return "{}";
-		StringBuilder sb = new StringBuilder("{");
-		Iterator<String> keyIter = map.keySet().iterator();
-		while (keyIter.hasNext()) {
-			String key = keyIter.next();
-			sb.append(key + "=" + map.get(key) + (keyIter.hasNext() ? "," : "}"));
-		}
-		return sb.toString();
-	}
+                    Thread t = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            try {
+                                for (; ; ) {
+
+                                    outputStream.write((toJson(values) + "\n").getBytes());
+                                    System.out.println(toJson(values));
+                                    Sleeper.sleep("car1", pollTimeout);
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }, "Socket Feeder");
+
+                    t.setDaemon(true);
+                    t.start();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public String toJson(Map<String, Object> map) {
+        if (map == null)
+            return "{}";
+        StringBuilder sb = new StringBuilder("{");
+        Iterator<String> keyIter = map.keySet().iterator();
+        while (keyIter.hasNext()) {
+            String key = keyIter.next();
+            sb.append(key + "=" + map.get(key) + (keyIter.hasNext() ? "," : "}"));
+        }
+        return sb.toString();
+    }
 
 }

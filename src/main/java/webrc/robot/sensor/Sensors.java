@@ -1,7 +1,6 @@
 package webrc.robot.sensor;
 
 import webrc.robot.RobotLog;
-import webrc.robot.notifier.Publisher;
 
 import java.util.Map;
 

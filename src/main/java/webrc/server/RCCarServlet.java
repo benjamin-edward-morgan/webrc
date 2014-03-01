@@ -1,7 +1,7 @@
 package webrc.server;
 
-import java.util.Iterator;
-import java.util.Map;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * ?action=set&driveX=-10&driveY=8&camX=4&camY=9
@@ -17,8 +17,15 @@ import java.util.Map;
  * @author benjaminmorgan
  * 
  */
-//@WebServlet("/rccar")
-public class RCCarServlet /*extends HttpServlet*/ {
+@RestController
+public class RCCarServlet {
+
+
+        @RequestMapping("/")
+        public String index() {
+            return "Greetings from Spring Boot!";
+        }
+}
 //	private static final long serialVersionUID = 1L;
 //
 //	ServerSocketNotifier ssn = ServerSocketNotifier.getSSN();
@@ -144,16 +151,16 @@ public class RCCarServlet /*extends HttpServlet*/ {
 		
 //		System.out.println("buffer flushed");
 //	}
-
-	public String toJson(Map<String, Object> map) {
-		StringBuilder sb = new StringBuilder("{");
-		Iterator<String> keyIter = map.keySet().iterator();
-		while (keyIter.hasNext()) {
-			String key = keyIter.next();
-			sb.append(key + "=" + map.get(key) + (keyIter.hasNext() ? "," : "}"));
-		}
-		return sb.toString();
-	}
-
-
-}
+//
+//	public String toJson(Map<String, Object> map) {
+//		StringBuilder sb = new StringBuilder("{");
+//		Iterator<String> keyIter = map.keySet().iterator();
+//		while (keyIter.hasNext()) {
+//			String key = keyIter.next();
+//			sb.append(key + "=" + map.get(key) + (keyIter.hasNext() ? "," : "}"));
+//		}
+//		return sb.toString();
+//	}
+//
+//
+//}

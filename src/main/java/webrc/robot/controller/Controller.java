@@ -1,7 +1,7 @@
 package webrc.robot.controller;
 
 import org.springframework.beans.factory.BeanNameAware;
-import webrc.robot.notifier.Subscriber;
+import webrc.messaging.Pubscriber;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import java.util.Map;
  * Time: 11:22 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Controller extends Subscriber implements BeanNameAware {
+public abstract class Controller extends Pubscriber implements BeanNameAware {
 
     String beanName;
 

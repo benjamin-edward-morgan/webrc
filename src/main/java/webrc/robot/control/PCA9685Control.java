@@ -1,18 +1,13 @@
 package webrc.robot.control;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
-
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.convert.Property;
 import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * a controller for a pwm device using the PCA9685 via i2c. This controller
@@ -57,12 +52,7 @@ public class PCA9685Control extends Control<Map<String, Object>> {
 
     I2CDevice dev = null;
 
-    @Autowired
-    @Value("1")
     int bus;
-
-    @Autowired
-    @Value("0x40")
     int device;
 
 	public PCA9685Control() {

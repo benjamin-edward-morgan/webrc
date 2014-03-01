@@ -1,4 +1,4 @@
-package webrc.robot.util;
+package webrc.util;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,9 +1,9 @@
-package webrc.robot.notifier;
+package webrc.messaging;
 
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,16 +12,14 @@ import java.util.Map;
  * Time: 10:05 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Publisher implements BeanNameAware {
+public abstract class Pubscriber {
 
     @Autowired
+    protected
     MessageService messageService;
 
-    String beanName;
-
-    @Override
-    public void setBeanName(String s) {
-        beanName=s;
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
     }
 
     protected void publish(Map<String, Object> values)
@@ -29,7 +27,12 @@ public class Publisher implements BeanNameAware {
         messageService.publish(values);
     }
 
-    public void setMessageService(MessageService messageService) {
-        this.messageService = messageService;
+    protected void subscribe(Set<String> keys)
+    {
+        messageService.subscribe(keys, this);
     }
+
+    protected abstract void notify(Map<String, Object> values);
+
+
 }

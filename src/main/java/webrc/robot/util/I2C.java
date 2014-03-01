@@ -1,14 +1,14 @@
 package webrc.robot.util;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import org.springframework.beans.factory.annotation.Value;
 import webrc.robot.RobotLog;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class I2C {
 
@@ -17,7 +17,7 @@ public class I2C {
 	static Map<Integer, I2CBus> busses = new HashMap<Integer, I2CBus>();
 
     @Value("${testMode}")
-    private static boolean testMode=false;
+    private static boolean testMode=true;
 
 	/**
 	 * 
@@ -69,7 +69,7 @@ public class I2C {
 
 			sb.append((hex.length() < 2 ? "0" : "") + Integer.toHexString(b & 0xff) + " ");
 		}
-		log.log(dev.toString() + " writing bytes to register:\n" + sb.toString() + " @ " + Integer.toHexString(register & 0xff));
+		log.log("Writing bytes to register:\n" + sb.toString() + " @ " + Integer.toHexString(register & 0xff));
 
 		if (!testMode) {
 			try {

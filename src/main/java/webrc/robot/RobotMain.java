@@ -13,5 +13,6 @@ import org.springframework.core.io.ClassPathResource;
 public class RobotMain {
     public static void main(String[] args) {
         SpringApplication.run(new ClassPathResource("robot.xml"), args);
+        //SpringApplication.run(RobotConfigClass.class, args);
     }
 }

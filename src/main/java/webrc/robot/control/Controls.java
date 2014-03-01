@@ -1,7 +1,7 @@
 package webrc.robot.control;
 
 import webrc.robot.RobotLog;
-import webrc.robot.notifier.Subscriber;
+import webrc.messaging.Pubscriber;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author benjaminmorgan
  * 
  */
-public class Controls extends Subscriber {
+public class Controls extends Pubscriber {
 
 	RobotLog log = RobotLog.getLog(this);
 
