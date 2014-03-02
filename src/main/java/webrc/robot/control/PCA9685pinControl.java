@@ -1,10 +1,11 @@
 package webrc.robot.control;
 
 import webrc.robot.util.I2C;
+import webrc.util.Conversion;
 
 import javax.annotation.PostConstruct;
 
-public class PCA9685pinControl extends Control<Float> {
+public class PCA9685pinControl extends Control {
 	
 
 	PCA9685Control pca9685Control;
@@ -24,7 +25,13 @@ public class PCA9685pinControl extends Control<Float> {
 	 * takes a value in [0,1]
 	 */
 	@Override
-	public void set(Float value) {
+	public void set(Object value) {
+
+        set(Conversion.toFloat(value));
+    }
+
+    private void set(Float value)
+    {
 		if(value < 0)
 			value = 0.0f;
 		if(value > 1)

@@ -1,30 +1,49 @@
 package webrc.server;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import webrc.messaging.Pubscriber;
+
+import java.util.Map;
 
 /**
  * ?action=set&driveX=-10&driveY=8&camX=4&camY=9
- * 
+ * <p/>
  * if action is "set" we set the state variables. If the state has changed, we
  * wake up any sleeping threads and immediately return. If the state did not
  * change, we will sleep and return the same variables
- * 
+ * <p/>
  * if the action is "get" and there are no other parameters, we immediately
  * return the state. If there are parameters and they match the current state,
  * we sleep for the timeout or until they are changed.
- * 
+ *
  * @author benjaminmorgan
- * 
  */
-@RestController
-public class RCCarServlet {
+@Controller
+@RequestMapping("/webrc")
+public class RCCarServlet extends Pubscriber {
 
 
-        @RequestMapping("/")
-        public String index() {
-            return "Greetings from Spring Boot!";
-        }
+    public RCCarServlet() {
+        System.out.println("init");
+    }
+
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public
+    @ResponseBody
+    String index(@RequestBody Map<String, Object> values) {
+        this.publish(values);
+        return values.toString();
+    }
+
+    @Override
+    protected void notify(Map<String, Object> values) {
+        //TODO: notify long-polling clients
+    }
 }
 //	private static final long serialVersionUID = 1L;
 //
@@ -115,30 +134,30 @@ public class RCCarServlet {
 //			}
 //		}
 
-		//
-		//
-		// boolean clientIsCorrect = false;
-		// if (knownState != null) {
-		// if (knownState.equals("unknown") && !BooleanState.isKnown())
-		// clientIsCorrect = true;
-		// else if (knownState.equals("on") && BooleanState.isOn() &&
-		// BooleanState.isKnown())
-		// clientIsCorrect = true;
-		// else if (knownState.equals("off") && !BooleanState.isOn() &&
-		// BooleanState.isKnown())
-		// clientIsCorrect = true;
-		// }
-		//
-		// if (clientIsCorrect) {
-		// sleep();
-		// }
-		//
-		// if (!BooleanState.isKnown())
-		// response.getWriter().write("unknown");
-		// else if (BooleanState.isOn())
-		// response.getWriter().write("on");
-		// else
-		// response.getWriter().write("off");
+//
+//
+// boolean clientIsCorrect = false;
+// if (knownState != null) {
+// if (knownState.equals("unknown") && !BooleanState.isKnown())
+// clientIsCorrect = true;
+// else if (knownState.equals("on") && BooleanState.isOn() &&
+// BooleanState.isKnown())
+// clientIsCorrect = true;
+// else if (knownState.equals("off") && !BooleanState.isOn() &&
+// BooleanState.isKnown())
+// clientIsCorrect = true;
+// }
+//
+// if (clientIsCorrect) {
+// sleep();
+// }
+//
+// if (!BooleanState.isKnown())
+// response.getWriter().write("unknown");
+// else if (BooleanState.isOn())
+// response.getWriter().write("on");
+// else
+// response.getWriter().write("off");
 
 //		Map<String, Object> map = new HashMap<String, Object>();
 //		map.put("driveX", driveX_SN.getState());
@@ -146,9 +165,9 @@ public class RCCarServlet {
 //		map.put("camX", camX_SN.getState());
 //		map.put("camY", camY_SN.getState());
 
-		//response.getWriter().append(toJson(map));
+//response.getWriter().append(toJson(map));
 
-		
+
 //		System.out.println("buffer flushed");
 //	}
 //

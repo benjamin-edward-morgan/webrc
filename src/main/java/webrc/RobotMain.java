@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +24,8 @@ import org.springframework.context.annotation.Configuration;
 public class RobotMain {
 
     public static void main(String[] args) {
-        SpringApplication.run(RobotMain.class, args);
+        Object[] sources = new Object[]{new ClassPathResource("server.xml"),RobotMain.class};
+        SpringApplication.run(sources, args);
     }
 
 }

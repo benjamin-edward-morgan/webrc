@@ -114,7 +114,9 @@ public class ManyToManyMap<A,B> {
         Set<A> as = new HashSet<A>();
         for(B b : bs)
         {
-            as.addAll(b2a.get(b));
+            Set<A> as_0 = b2a.get(b);
+            if(as_0 != null)
+                as.addAll(as_0);
         }
         return as;
     }
@@ -129,7 +131,9 @@ public class ManyToManyMap<A,B> {
         Set<B> bs = new HashSet<B>();
         for(A a : as)
         {
-            bs.addAll(a2b.get(a));
+            Set<B> bs_0 = a2b.get(a);
+            if(bs_0!=null)
+                 bs.addAll(bs_0);
         }
         return bs;
     }

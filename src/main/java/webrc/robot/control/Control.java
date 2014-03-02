@@ -1,8 +1,8 @@
 package webrc.robot.control;
 
-import webrc.robot.RobotLog;
+import webrc.RobotLog;
 
-public abstract class Control<X extends Object> {
+public abstract class Control {
 
 	RobotLog log = RobotLog.getLog(this);
 	
@@ -10,6 +10,6 @@ public abstract class Control<X extends Object> {
 	 * changes some value (a motor or something)
 	 * @param value
 	 */
-	public abstract void set(X value);
+	public abstract void set(Object value);
 	
 }

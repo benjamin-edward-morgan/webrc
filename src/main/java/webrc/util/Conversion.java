@@ -8,4 +8,23 @@ package webrc.util;
  * To change this template use File | Settings | File Templates.
  */
 public class Conversion {
+
+
+    public static Float toFloat(Object o)
+    {
+        if(o instanceof Float)
+            return (Float)o;
+        else if (o instanceof Double)
+        {
+            return ((Double)o).floatValue();
+        }
+        else if (o instanceof Integer)
+        {
+            return ((Integer)o).floatValue();
+        }
+        else
+        {
+            throw new RuntimeException("expected float, double for integer but recieved: " + o);
+        }
+    }
 }

@@ -4,7 +4,7 @@
 
 <beans>
 
-    <!--PWM Controller Board-->
+<!--PWM Controller Board-->
 
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
@@ -59,13 +59,6 @@
     <bean id="messageService" class="webrc.messaging.MessageService">
     </bean>
 
-
-    <!--controllers are both publishers and subscribers-->
-
-    <bean id="socketController" class="webrc.robot.controller.SocketController">
-        <property name="host" value="localhost"/>
-        <property name="port" value="8081"/>
-    </bean>
 
 
 </beans>

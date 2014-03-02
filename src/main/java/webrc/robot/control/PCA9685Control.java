@@ -7,7 +7,6 @@ import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * a controller for a pwm device using the PCA9685 via i2c. This controller
@@ -18,7 +17,7 @@ import java.util.Map;
  * @author benjaminmorgan
  * 
  */
-public class PCA9685Control extends Control<Map<String, Object>> {
+public class PCA9685Control extends Control {
 
 	static final byte MODE1 = 0x00;
 	static final byte MODE2 = 0x01;
@@ -48,7 +47,7 @@ public class PCA9685Control extends Control<Map<String, Object>> {
 
 
     @Value("${testMode}")
-    private static boolean testMode=true;
+    private static boolean testMode=false;
 
     I2CDevice dev = null;
 
@@ -93,7 +92,7 @@ public class PCA9685Control extends Control<Map<String, Object>> {
 	}
 
 	@Override
-	public void set(Map<String, Object> values) {
+	public void set(Object value) {
 		//TODO: use allcall and board level flags
 	}
 	

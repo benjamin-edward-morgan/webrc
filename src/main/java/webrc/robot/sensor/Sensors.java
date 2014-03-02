@@ -1,6 +1,7 @@
 package webrc.robot.sensor;
 
-import webrc.robot.RobotLog;
+import webrc.messaging.Pubscriber;
+import webrc.RobotLog;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import java.util.Map;
  * Time: 5:53 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Sensors extends Publisher{
+public class Sensors extends Pubscriber {
 
     RobotLog log = RobotLog.getLog(this);
 
@@ -22,4 +23,8 @@ public class Sensors extends Publisher{
     }
 
 
+    @Override
+    protected void notify(Map<String, Object> values) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

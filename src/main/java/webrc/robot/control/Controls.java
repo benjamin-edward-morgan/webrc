@@ -1,6 +1,6 @@
 package webrc.robot.control;
 
-import webrc.robot.RobotLog;
+import webrc.RobotLog;
 import webrc.messaging.Pubscriber;
 
 import javax.annotation.PostConstruct;
@@ -16,9 +16,9 @@ public class Controls extends Pubscriber {
 
 	RobotLog log = RobotLog.getLog(this);
 
-	private Map<String, Control<?>> controls = null;
+	private Map<String, Control> controls = null;
 
-    public void setControls(Map<String, Control<?>> controls) {
+    public void setControls(Map<String, Control> controls) {
         this.controls = controls;
     }
 
@@ -45,6 +45,7 @@ public class Controls extends Pubscriber {
 						log.log(e);
 					}
 				}
+
 			}
 	}
 }

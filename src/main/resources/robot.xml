@@ -62,9 +62,19 @@
 
     <!--controllers are both publishers and subscribers-->
 
-    <bean id="socketController" class="webrc.robot.controller.SocketController">
-        <property name="host" value="localhost"/>
-        <property name="port" value="8081"/>
+    <!--<bean id="socketController" class="webrc.robot.controller.SocketController">-->
+        <!--<property name="host" value="localhost"/>-->
+        <!--<property name="port" value="8081"/>-->
+    <!--</bean>-->
+
+
+
+
+
+    <!--server stuff-->
+
+    <bean id="servletFactory" class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory">
+    <property name="port" value="8080"/>
     </bean>
 
 
