@@ -1,11 +1,11 @@
-package webrc.robot;
+package webrc.util;
 
 /**
  * Created with IntelliJ IDEA.
  * User: benjaminmorgan
- * Date: 2/27/14
- * Time: 9:36 PM
+ * Date: 3/1/14
+ * Time: 7:09 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RobotConfigClass {
+public class Conversion {
 }

@@ -1,4 +1,4 @@
-package webrc.robot;
+package webrc;
 
 public class RobotException extends Exception {
 
