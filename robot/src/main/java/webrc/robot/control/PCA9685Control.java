@@ -46,7 +46,7 @@ public class PCA9685Control extends Control {
 
 
 //    @Value("${testMode}")
-    private static boolean testMode=false;
+    private static boolean testMode=true;
 
     I2CDevice dev = null;
 

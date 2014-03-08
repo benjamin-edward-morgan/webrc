@@ -1,5 +1,7 @@
 package webrc.messaging;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +14,7 @@ import java.util.Set;
  */
 public abstract class Pubscriber {
 
-    //@Autowired
+    @Autowired
     protected
     MessageService messageService;
 

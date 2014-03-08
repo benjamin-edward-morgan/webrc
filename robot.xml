@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
-        "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-<beans>
+    <!--<?xml version="1.0" encoding="UTF-8"?>-->
+    <!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"-->
+    <!--"http://www.springframework.org/dtd/spring-beans-2.0.dtd">-->
 
+    <context:annotation-config/>
     <!--PWM Controller Board-->
+
+
 
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
@@ -62,19 +72,9 @@
 
     <!--controllers are both publishers and subscribers-->
 
-    <!--<bean id="socketController" class="webrc.robot.controller.SocketController">-->
-    <!--<property name="host" value="localhost"/>-->
-    <!--<property name="port" value="8081"/>-->
-    <!--</bean>-->
-
-
-
-
-
-    <!--server stuff-->
-
-    <bean id="servletFactory" class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory">
-        <property name="port" value="8080"/>
+    <bean id="socketController" class="webrc.robot.controller.SocketController">
+        <property name="host" value="localhost"/>
+        <property name="port" value="8081"/>
     </bean>
 
 

@@ -20,6 +20,8 @@ public class Controls extends Pubscriber {
 
     public void setControls(Map<String, Control> controls) {
         this.controls = controls;
+        log.log("configured controls with keys: " + controls.keySet().toString());
+
     }
 
     @PostConstruct
@@ -27,6 +29,7 @@ public class Controls extends Pubscriber {
     {
         //subscribe to each control based on the name in the autowired map
         subscribe(controls.keySet());
+        log.log("subscribed to keys: " + controls.keySet().toString());
     }
 
 	public void notify(Map<String, Object> values) {
