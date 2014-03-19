@@ -1,5 +1,6 @@
 package webrc.server;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,8 +22,8 @@ import java.util.Map;
  *
  * @author benjaminmorgan
  */
-//@Controller
-//@RequestMapping("/webrc")
+@Controller
+@RequestMapping("/webrc")
 public class RCCarServlet extends Pubscriber {
 
 
@@ -30,14 +31,16 @@ public class RCCarServlet extends Pubscriber {
         System.out.println("init");
     }
 
-
-    @RequestMapping(method = RequestMethod.PUT)
+//    @RequestMapping("/webrc")
+    @RequestMapping(method = RequestMethod.GET)
     public
     @ResponseBody
-    String index(@RequestBody Map<String, Object> values) {
-        this.publish(values);
-        return values.toString();
+    String index(/*@RequestBody Map<String, Object> values*/) {
+        //this.publish(values);
+       // return values.toString();
+        return "Hello World" ;
     }
+
 
     @Override
     protected void notify(Map<String, Object> values) {
