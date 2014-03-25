@@ -26,16 +26,15 @@ import java.util.Map;
 @RequestMapping("/webrc")
 public class RCCarServlet extends Pubscriber {
 
-
     public RCCarServlet() {
-        System.out.println("init");
+        System.out.println("init rc car servlet");
     }
 
 //    @RequestMapping("/webrc")
     @RequestMapping(method = RequestMethod.GET)
     public
     @ResponseBody
-    String index(/*@RequestBody Map<String, Object> values*/) {
+    String get(/*@RequestBody Map<String, Object> values*/) {
         //this.publish(values);
        // return values.toString();
         return "Hello World" ;

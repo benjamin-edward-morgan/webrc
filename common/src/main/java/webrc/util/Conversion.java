@@ -24,7 +24,7 @@ public class Conversion {
         }
         else
         {
-            throw new RuntimeException("expected float, double for integer but recieved: " + o);
+            throw new RuntimeException("expected float, double or integer but recieved: " + o);
         }
     }
 }

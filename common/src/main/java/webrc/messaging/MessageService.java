@@ -16,6 +16,11 @@ public class MessageService {
 
     ManyToManyMap<String, Pubscriber> keySubscribers = new ManyToManyMap<String, Pubscriber>();
 
+    public MessageService()
+    {
+        System.out.println("init message service");
+    }
+
 
     public void publish(Map<String, Object> values)
     {
