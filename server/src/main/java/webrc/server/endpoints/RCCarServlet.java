@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import webrc.messaging.Pubscriber;
 
+import java.lang.System;
 import java.util.Map;
 
 /**
@@ -30,14 +31,17 @@ public class RCCarServlet extends Pubscriber {
         System.out.println("init rc car servlet");
     }
 
-//    @RequestMapping("/webrc")
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.POST)
     public
     @ResponseBody
-    String get(/*@RequestBody Map<String, Object> values*/) {
-        //this.publish(values);
-       // return values.toString();
-        return "Hello World" ;
+    String post(@RequestBody Map<String, Object> values) {
+
+        //todo: map to car key in session
+        this.publishOne("", (Object)values);
+        //System.out.println(values);
+
+
+        return values.toString() ;
     }
 
 

@@ -9,6 +9,18 @@
 
     <context:annotation-config/>
 
+    <bean id="globalProperties"
+          class="webrc.robot.RobotProperties">
+        <property name="testMode" value="true"/>
+    </bean>
+
+    <!--controllers are both publishers and subscribers-->
+    <bean id="socketController" class="webrc.robot.controller.SocketController">
+        <property name="host" value="localhost"/>
+        <property name="port" value="8081"/>
+    </bean>
+
+    <bean id="i2c" class="webrc.robot.util.I2C"/>
 
     <!--PWM Controller Board-->
 
@@ -64,14 +76,5 @@
 
     <bean id="messageService" class="webrc.messaging.MessageService">
     </bean>
-
-
-    <!--controllers are both publishers and subscribers-->
-
-    <bean id="socketController" class="webrc.robot.controller.SocketController">
-        <property name="host" value="localhost"/>
-        <property name="port" value="8081"/>
-    </bean>
-
 
 </beans>

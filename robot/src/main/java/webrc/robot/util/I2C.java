@@ -3,20 +3,24 @@ package webrc.robot.util;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import webrc.WebRcLog;
+import webrc.robot.RobotProperties;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class I2C {
 
-	static WebRcLog log = WebRcLog.getLog(I2C.class);
+	WebRcLog log = WebRcLog.getLog(I2C.class);
 
-	static Map<Integer, I2CBus> busses = new HashMap<Integer, I2CBus>();
+	Map<Integer, I2CBus> busses = new HashMap<Integer, I2CBus>();
 
-//    @Value("${testMode}")
-    private static boolean testMode=false;
+    @Autowired
+    RobotProperties robotProperties;
 
 	/**
 	 * 
@@ -24,7 +28,7 @@ public class I2C {
 	 *            I2CBus.BUS_0 or I2CBus.BUS_1
 	 * @return
 	 */
-	public static I2CBus geti2cBus(int busId) {
+	public I2CBus geti2cBus(int busId) {
 		if (busses.containsKey(busId))
 			return busses.get(busId);
 		try {
@@ -38,7 +42,7 @@ public class I2C {
 		return null;
 	}
 
-	public static void writeBytes(I2CDevice dev, byte[] bytes) {
+	public void writeBytes(I2CDevice dev, byte[] bytes) {
 
 		// log writing bytes
 		StringBuilder sb = new StringBuilder();
@@ -49,7 +53,7 @@ public class I2C {
 		}
 		log.log(dev.toString() + " writing raw bytes:\n" + sb.toString());
 
-		if (!testMode) {
+		if (!robotProperties.isTestMode()) {
 			try {
 				dev.write(bytes, 0, bytes.length);
 			} catch (IOException e) {
@@ -59,7 +63,7 @@ public class I2C {
 		}
 	}
 
-	public static void writeBytesToRegister(I2CDevice dev, byte[] bytes, byte register) {
+	public void writeBytesToRegister(I2CDevice dev, byte[] bytes, byte register) {
 
 		// log writing bytes
 		StringBuilder sb = new StringBuilder();
@@ -70,7 +74,7 @@ public class I2C {
 		}
 		log.log("Writing bytes to register:\n" + sb.toString() + " @ " + Integer.toHexString(register & 0xff));
 
-		if (!testMode) {
+		if (!robotProperties.isTestMode()) {
 			try {
 				dev.write(register, bytes, 0, bytes.length);
 			} catch (IOException e) {

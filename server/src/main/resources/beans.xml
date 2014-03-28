@@ -20,6 +20,10 @@
     <bean id="messageService" class="webrc.messaging.MessageService">
     </bean>
 
+    <bean id="socketNotifier" class="webrc.server.endpoints.ServerSocketNotifier">
+        <property name="port" value="8081"/>
+    </bean>
+
     <bean id="embeddedTomcatFactory" class="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory">
         <property name="contextPath" value=""/>
     </bean>

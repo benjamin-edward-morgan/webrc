@@ -2,6 +2,8 @@ package webrc.robot.control;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
+import org.springframework.beans.factory.annotation.Autowired;
+import webrc.robot.RobotProperties;
 import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
@@ -44,9 +46,11 @@ public class PCA9685Control extends Control {
 		return (byte) (4 * i + 8);
 	}
 
+    @Autowired
+    RobotProperties robotProperties;
 
-//    @Value("${testMode}")
-    private static boolean testMode=true;
+    @Autowired
+    I2C i2c;
 
     I2CDevice dev = null;
 
@@ -60,11 +64,11 @@ public class PCA9685Control extends Control {
     public void init() {
         log.log("Created PCA control!!");
 
-		if (!testMode) {
-			I2CBus i2c = I2C.geti2cBus(bus);
+		if (!robotProperties.isTestMode()) {
+			I2CBus i2cBus = i2c.geti2cBus(bus);
 			if (i2c != null) {
 				try {
-					dev = i2c.getDevice(device);
+					dev = i2cBus.getDevice(device);
 
 					// TODO do this via the Set method
 					//enable register autoincrement
@@ -73,7 +77,7 @@ public class PCA9685Control extends Control {
 					byte mode1 = Byte.parseByte("00100000", 2);
 					
 					byte[] modes = new byte[]{mode1};
-					I2C.writeBytesToRegister(dev, modes, MODE1);
+					i2c.writeBytesToRegister(dev, modes, MODE1);
 					
 					//put the board to sleep on shutdown
 					Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
@@ -101,7 +105,7 @@ public class PCA9685Control extends Control {
 		//set the sleep flag
 		byte mode1 = Byte.parseByte("00110000", 2);		
 		byte[] modes = new byte[]{mode1};
-		I2C.writeBytesToRegister(dev, modes, MODE1);
+		i2c.writeBytesToRegister(dev, modes, MODE1);
 	}
 
 
