@@ -54,8 +54,17 @@ public class PCA9685Control extends Control {
 
     I2CDevice dev = null;
 
-    int bus;
-    int device;
+    public void setBus(int bus) {
+        this.bus = bus;
+    }
+
+    public int bus;
+
+    public void setDevice(int device) {
+        this.device = device;
+    }
+
+    public int device;
 
 	public PCA9685Control() {
     }
@@ -107,14 +116,4 @@ public class PCA9685Control extends Control {
 		byte[] modes = new byte[]{mode1};
 		i2c.writeBytesToRegister(dev, modes, MODE1);
 	}
-
-
-
-    public void setBus(int bus) {
-        this.bus = bus;
-    }
-
-    public void setDevice(int device) {
-        this.device = device;
-    }
 }

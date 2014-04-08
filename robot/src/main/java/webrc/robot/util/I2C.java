@@ -32,7 +32,7 @@ public class I2C {
 		if (busses.containsKey(busId))
 			return busses.get(busId);
 		try {
-			I2CBus bus = I2CFactory.getInstance(busId);
+			I2CBus bus = I2CFactory.getInstance(RaspiConstants.getBus(busId));
 			busses.put(busId, bus);
 			return bus;
 		} catch (IOException e) {

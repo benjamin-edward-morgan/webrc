@@ -137,8 +137,8 @@ $(document).ready(
 					camY_0=camY;
 					
 					var dat = {};
-					dat['driveX'] = driveX_0;
-					dat['driveY'] = driveY_0;
+					dat['steering'] = driveX_0;
+					dat['speed'] = driveY_0;
 					dat['pan'] = camX_0;
 					dat['tilt'] = camY_0;
 
