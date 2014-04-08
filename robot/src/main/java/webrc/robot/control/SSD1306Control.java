@@ -129,8 +129,14 @@ public class SSD1306Control extends Control{
 
 
 //
-//                    //memory mode
-//                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x00});
+                    //memory mode: vertical
+                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x01});
+
+                    //horizontal
+                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x00});
+
+                    //paging
+                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x10});
 //
 //                    //**external/internal vcc ?
 //                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x9F}); //ext vcc
@@ -148,23 +154,39 @@ public class SSD1306Control extends Control{
                         public void run() {
                             for(;;)
                             {
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x40, (byte)(Math.random()*256)});
+                                byte[] bytes = new byte[1024+1];
+                                bytes[0]=(byte)0x40;
+                                for(int i=0;i<1024;i++)
+                                {
+                                    bytes[i+1]=(byte)(System.currentTimeMillis()&0xff);
+
+                                    try {
+                                        Thread.sleep(0,(int)(Math.random()*1000000));
+                                    } catch (InterruptedException e) {
+                                    }
+                                }
+
+
+                                i2c.writeBytes(dev, bytes);
+
+
+                               // i2c.writeBytes(dev, new byte[]{(byte)0x40, (byte)(Math.random()*256)});
                                 //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, (byte)0x00, (byte)0x07});
 
 //                                i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA6});
 
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                }
+//                                try {
+//                                    Thread.sleep(500);
+//                                } catch (InterruptedException e) {
+//                                }
 
                                 //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x21, 0x00, 0x3F});
                                 //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, 0x00, 0x07});
 
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                }
+//                                try {
+//                                    Thread.sleep(500);
+//                                } catch (InterruptedException e) {
+//                                }
 
 
 
