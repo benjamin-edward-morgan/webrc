@@ -11,11 +11,10 @@ import java.util.Map;
  * Time: 11:22 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Controller extends Pubscriber{
+public abstract class Controller extends Pubscriber {
 
 
-    protected void publish(Map<String, Object> values)
-    {
+    protected void publish(Map<String, Object> values) {
         messageService.publish(values);
     }
 

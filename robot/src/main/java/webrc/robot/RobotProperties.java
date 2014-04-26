@@ -16,6 +16,6 @@ public class RobotProperties {
     }
 
     public void setTestMode(boolean testMode) {
-        this.testMode=testMode;
+        this.testMode = testMode;
     }
 }

@@ -11,9 +11,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  */
 public class Main {
 
-    public static void main(String[] args)
-    {
-        FileSystemXmlApplicationContext fsxc  = new FileSystemXmlApplicationContext("robot.xml");
+    public static void main(String[] args) {
+        FileSystemXmlApplicationContext fsxc = new FileSystemXmlApplicationContext("robot.xml");
 
         fsxc.start();
 

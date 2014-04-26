@@ -10,20 +10,14 @@ package webrc.util;
 public class Conversion {
 
 
-    public static Float toFloat(Object o)
-    {
-        if(o instanceof Float)
-            return (Float)o;
-        else if (o instanceof Double)
-        {
-            return ((Double)o).floatValue();
-        }
-        else if (o instanceof Integer)
-        {
-            return ((Integer)o).floatValue();
-        }
-        else
-        {
+    public static Float toFloat(Object o) {
+        if (o instanceof Float)
+            return (Float) o;
+        else if (o instanceof Double) {
+            return ((Double) o).floatValue();
+        } else if (o instanceof Integer) {
+            return ((Integer) o).floatValue();
+        } else {
             throw new RuntimeException("expected float, double or integer but recieved: " + o);
         }
     }

@@ -8,16 +8,18 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import webrc.robot.RobotProperties;
+import webrc.robot.domain.ImageOverlay;
 import webrc.robot.util.I2C;
 import webrc.robot.util.RaspiConstants;
 
 import javax.annotation.PostConstruct;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class SSD1306Control extends Control{
-	
-	I2CDevice dev;
-	GpioPinDigitalOutput pin;
+public class SSD1306Control extends Control {
+
+    I2CDevice dev;
+    GpioPinDigitalOutput pin;
 
     @Autowired
     RobotProperties robotProperties;
@@ -30,6 +32,17 @@ public class SSD1306Control extends Control{
     public int device;
     public int resetPin;
 
+    //copy of display's memory
+    private byte[] pixels = new byte[128 * 64 / 8];
+
+    private MaskType mask = MaskType.ATOP;
+
+    private enum MaskType {
+        XOR,
+        OR,
+        AND,
+        ATOP
+    }
 
     public void setBus(int bus) {
         this.bus = bus;
@@ -43,199 +56,189 @@ public class SSD1306Control extends Control{
         this.resetPin = resetPin;
     }
 
-	public SSD1306Control() {
+    public SSD1306Control() {
     }
+
 
     @PostConstruct
     public void init() {
-		if (!robotProperties.isTestMode()) {
-			I2CBus i2cbus = i2c.geti2cBus(bus);
-				try {
-					dev = i2cbus.getDevice(device);
-					
-					GpioController gpio = GpioFactory.getInstance();
+        if (!robotProperties.isTestMode()) {
+            I2CBus i2cbus = i2c.geti2cBus(bus);
+            try {
+                dev = i2cbus.getDevice(device);
+
+                GpioController gpio = GpioFactory.getInstance();
+
+                /**Boilerplate code to activate screen**/
+
+                // provision gpio pin #01 as an output pin and toggle
+                pin = gpio.provisionDigitalOutputPin(RaspiConstants.getPin(resetPin));
+                pin.setState(PinState.HIGH);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    //ok
+                }
+
+                pin.setState(PinState.LOW);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    //okm
+                }
+
+                pin.setState(PinState.HIGH);
 
 
-			        // provision gpio pin #01 as an output pin and toggle
-			        pin = gpio.provisionDigitalOutputPin(RaspiConstants.getPin(resetPin));
-			        pin.setState(PinState.HIGH);
-			        
-			        try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						//e.printStackTrace();
-					}
-			        
-			        pin.setState(PinState.LOW);
-			        
-			        try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						//e.printStackTrace();
-					}
-			        
-			        pin.setState(PinState.HIGH);
+                //displayoff
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xAE});
 
+                //set display-clock-div
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xD5, (byte) 0x80});
 
-                    //displayoff
-					i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xAE});
+                //set multiplex
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0XA8, (byte) 0x3F});
 
-                    //set display-clock-div
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xD5, (byte)0x80});
+                //set display offset
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xD3, (byte) 0x00});
 
-                    //set multiplex
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0XA8, (byte)0x3F});
+                //line #0
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0x40});
 
-                    //set display offset
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xD3, (byte)0x00});
+                //**charge pump
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x8D, (byte)0x10}); //ext vcc
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0x8D, (byte) 0x14});
 
-                    //line #0
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x40});
+                //segremap
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xA1});
 
-                    //**charge pump
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x8D, (byte)0x10}); //ext vcc
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x8D, (byte)0x14});
+                //set com output scan direction
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xC8});
 
-                    //segremap
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA1});
+                //set com pins
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xDA, (byte) 0x12});
 
-                    //set com output scan direction
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xC8});
+                //**set contrast
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x81, (byte)0x9F}); //ext vcc
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0x81, (byte) 0xCF});
 
-                    //set com pins
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xDA, (byte)0x12});
+                //**set precharge
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xD9, (byte)0x22}); //ext vcc
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xD9, (byte) 0xF1});
 
-                    //**set contrast
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x81, (byte)0x9F}); //ext vcc
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x81, (byte)0xCF});
+                //set vcomh deselect level ?
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xDB, (byte) 0x40});
 
-                    //**set precharge
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xD9, (byte)0x22}); //ext vcc
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xD9, (byte)0xF1});
+                //"entire" display on
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xA4});
 
-                    //set vcomh deselect level ?
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xDB, (byte)0x40});
+                //normal display (not inverse)
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xA6});
 
-                    //"entire" display on
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA4});
+                //clear screen?
 
-                    //normal display (not inverse)
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA6});
+                //display on
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0xAF});
 
-                    //clear screen?
+                //memory mode: vertical
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x01});
 
-                    //display on
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xAF});
+                //horizontal
+                i2c.writeBytes(dev, new byte[]{(byte) 0x00, (byte) 0x20, (byte) 0x00});
 
+                //paging
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x10});
 
-//
-                    //memory mode: vertical
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x01});
+                //**external/internal vcc ?
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x9F}); //ext vcc
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xCF});
 
-                    //horizontal
-                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x00});
+                //all on
+                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA5});
 
-                    //paging
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x10});
-//
-//                    //**external/internal vcc ?
-//                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x9F}); //ext vcc
-//                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xCF});
+            } catch (IOException e) {
+                log.log("Error: could not get device " + device + " from bus " + bus);
+                log.log(e);
+            }
+        }
+    }
 
-                    //all on
-                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA5});
+    public void blitImage(BufferedImage img, int x, int y) {
+        int w = img.getWidth();
+        int h = img.getHeight();
 
+        for (int page = Math.max(0, y / 8); page < Math.min(8, Math.ceil((y + h) / 8.0)); page++) {
+            for (int seg = Math.max(0, x); seg < Math.min(128, x + w); seg++) {
+                byte i = getImageByte(img, seg - x, page * 8 - y);
+                byte m = getMaskByte(img, seg - x, page * 8 - y);
+                pixels[page * 128 + seg] = (byte) ((pixels[page * 128 + seg] & (m ^ 0xff)) | (mask(pixels[page * 128 + seg], i) & m));
+            }
+        }
 
-                    log.log("Turned screen on!!??");
-					//fuck yea it did!!!
+        //TODO: don't write the whole goddamn screen if you don't have to.
+        byte[] data = new byte[pixels.length + 1];
+        data[0] = 0x40;
+        for (int i = 0; i < pixels.length; i++)
+            data[i + 1] = pixels[i];
+        i2c.writeBytes(dev, data);
+    }
 
-                    Thread t = new Thread(new Runnable(){
-                        @Override
-                        public void run() {
-                            for(;;)
-                            {
-                                byte[] bytes = new byte[1024+1];
-                                bytes[0]=(byte)0x40;
-                                for(int i=0;i<1024;i++)
-                                {
-                                    bytes[i+1]=(byte)(System.currentTimeMillis()&0xff);
+    public byte mask(byte original, byte overlay) {
+        switch (mask) {
+            case XOR:
+                return (byte) (original ^ overlay);
+            case AND:
+                return (byte) (original & overlay);
+            case OR:
+                return (byte) (original | overlay);
+            case ATOP:
+                return overlay;
+        }
+        return overlay;
+    }
 
-                                    try {
-                                        Thread.sleep(0,(int)(Math.random()*1000000));
-                                    } catch (InterruptedException e) {
-                                    }
-                                }
+    public byte getMaskByte(BufferedImage img, int x, int y) {
+        int b = 0x00;
+        for (int i = y + 8 - 1; i >= y; i--) {
+            b = b << 1;
+            if (i >= 0 && i < img.getHeight()) {
+                b |= 0x01;
+            }
+        }
+        return (byte) b;
+    }
 
+    public byte getImageByte(BufferedImage img, int x, int y) {
+        int b = 0x00;
+        for (int i = y + 8 - 1; i >= y; i--) {
+            b = b << 1;
+            if (i >= 0 && i < img.getHeight()) {
+                b |= convertPixel(img.getRGB(x, i));
+            }
+        }
+        return (byte) b;
+    }
 
-                                i2c.writeBytes(dev, bytes);
+    public int convertPixel(int rgb) {
+        return (((rgb >> 0) & 0xff) > 0 ||
+                ((rgb >> 8) & 0xff) > 0 ||
+                ((rgb >> 16) & 0xff) > 0
+                ? 0x01 :
+                0x00
+        );
+    }
 
+    @Override
+    public void set(String key, Object value) {
 
-                               // i2c.writeBytes(dev, new byte[]{(byte)0x40, (byte)(Math.random()*256)});
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, (byte)0x00, (byte)0x07});
+        if (value instanceof ImageOverlay) {
+            ImageOverlay overlay = (ImageOverlay) value;
+            blitImage(overlay.image, overlay.x, overlay.y);
+        } else {
+            log.log("expected ImageOverlay but got " + value.getClass());
+        }
 
-//                                i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA6});
-
-//                                try {
-//                                    Thread.sleep(500);
-//                                } catch (InterruptedException e) {
-//                                }
-
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x21, 0x00, 0x3F});
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, 0x00, 0x07});
-
-//                                try {
-//                                    Thread.sleep(500);
-//                                } catch (InterruptedException e) {
-//                                }
-
-
-
-                            }
-                        }
-                    });
-                    t.start();
-
-					
-				} catch (IOException e) {
-					log.log("Error: could not get device " + device + " from bus " + bus);
-					log.log(e);
-				}
-			}
-	}
-	
-	
-	@Override
-	public void set(Object value) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-//	public void writeBytes(byte[] bytes) {
-//
-//		{
-//			StringBuilder sb = new StringBuilder();
-//			for(byte b : bytes)
-//			{
-//				String hex = Integer.toHexString(b);
-//
-//				sb.append((hex.length()<2 ? "0" : "") + Integer.toHexString(b&0xff)+" ");
-//			}
-//			log.log("Writing: " + sb.toString());
-//		}
-//
-//		if (!Vars.getBoolean("testMode", false)) {
-//			try {
-//				//dev.write(bytes, 0, bytes.length);
-//				//for (byte b : bytes)
-//				//{
-//					dev.write(bytes, 0, bytes.length);
-//				//}
-//			} catch (IOException e) {
-//				log.log("Error writing to I2C Device");
-//				log.log(e);
-//			}
-//		}
-//		//else
-//
-//	}
+    }
 }

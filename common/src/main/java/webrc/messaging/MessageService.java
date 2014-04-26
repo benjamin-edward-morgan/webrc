@@ -16,23 +16,18 @@ public class MessageService {
 
     ManyToManyMap<String, Pubscriber> keySubscribers = new ManyToManyMap<String, Pubscriber>();
 
-    public MessageService()
-    {
-        System.out.println("init message service");
+    public MessageService() {
     }
 
-
-    public void publish(Map<String, Object> values)
-    {
+    public void publish(Map<String, Object> values) {
         Set<Pubscriber> subscribers = keySubscribers.getBforA(values.keySet());
-        for(Pubscriber subscriber : subscribers)
-        {
+        for (Pubscriber subscriber : subscribers) {
+            //TODO: only notify the subscriber about what it has subscribed to
             subscriber.notify(values);
         }
     }
 
-    public void subscribe(Set<String> keys, Pubscriber subscriber)
-    {
+    public void subscribe(Set<String> keys, Pubscriber subscriber) {
         keySubscribers.put(keys, subscriber);
     }
 
