@@ -1,4 +1,4 @@
-/*rccannon to scale*/
+/*nerfprojectile to scale (millimeters)*/
 
 epsilon = 0.01;
 nerfbodyheight = 58.5;
