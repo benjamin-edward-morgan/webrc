@@ -29,8 +29,9 @@ public class PCA9685pinControl extends Control {
 	 * takes a value in [0,1]
 	 */
 	@Override
-	public void set(Object value) {
+	public void set(String key, Object value) {
 
+        log.log("SET " + key + ":" + value);
         set(Conversion.toFloat(value));
     }
 

@@ -8,10 +8,12 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import webrc.robot.RobotProperties;
+import webrc.robot.domain.ImageOverlay;
 import webrc.robot.util.I2C;
 import webrc.robot.util.RaspiConstants;
 
 import javax.annotation.PostConstruct;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class SSD1306Control extends Control{
@@ -30,6 +32,17 @@ public class SSD1306Control extends Control{
     public int device;
     public int resetPin;
 
+    //copy of display's memory
+    private byte[] pixels = new byte[128*64/8];
+
+    private MaskType mask = MaskType.ATOP;
+
+    private enum MaskType{
+        XOR,
+        OR,
+        AND,
+        ATOP
+    }
 
     public void setBus(int bus) {
         this.bus = bus;
@@ -45,6 +58,7 @@ public class SSD1306Control extends Control{
 
 	public SSD1306Control() {
     }
+
 
     @PostConstruct
     public void init() {
@@ -63,7 +77,7 @@ public class SSD1306Control extends Control{
 			        try {
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
-						//e.printStackTrace();
+						//ok
 					}
 			        
 			        pin.setState(PinState.LOW);
@@ -71,7 +85,7 @@ public class SSD1306Control extends Control{
 			        try {
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
-						//e.printStackTrace();
+						//okm
 					}
 			        
 			        pin.setState(PinState.HIGH);
@@ -137,76 +151,105 @@ public class SSD1306Control extends Control{
 
                     //paging
                     //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x20, (byte)0x10});
-//
-//                    //**external/internal vcc ?
-//                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x9F}); //ext vcc
-//                    i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xCF});
+
+                    //**external/internal vcc ?
+                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x9F}); //ext vcc
+                    //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xCF});
 
                     //all on
                     //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA5});
 
-
-                    log.log("Turned screen on!!??");
-					//fuck yea it did!!!
-
-                    Thread t = new Thread(new Runnable(){
-                        @Override
-                        public void run() {
-                            for(;;)
-                            {
-                                byte[] bytes = new byte[1024+1];
-                                bytes[0]=(byte)0x40;
-                                for(int i=0;i<1024;i++)
-                                {
-                                    bytes[i+1]=(byte)(System.currentTimeMillis()&0xff);
-
-                                    try {
-                                        Thread.sleep(0,(int)(Math.random()*1000000));
-                                    } catch (InterruptedException e) {
-                                    }
-                                }
-
-
-                                i2c.writeBytes(dev, bytes);
-
-
-                               // i2c.writeBytes(dev, new byte[]{(byte)0x40, (byte)(Math.random()*256)});
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, (byte)0x00, (byte)0x07});
-
-//                                i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA6});
-
-//                                try {
-//                                    Thread.sleep(500);
-//                                } catch (InterruptedException e) {
-//                                }
-
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x21, 0x00, 0x3F});
-                                //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0x22, 0x00, 0x07});
-
-//                                try {
-//                                    Thread.sleep(500);
-//                                } catch (InterruptedException e) {
-//                                }
-
-
-
-                            }
-                        }
-                    });
-                    t.start();
-
-					
 				} catch (IOException e) {
 					log.log("Error: could not get device " + device + " from bus " + bus);
 					log.log(e);
 				}
 			}
 	}
+
+
+    public void blitImage(BufferedImage img, int x, int y)
+    {
+        int w = img.getWidth();
+        int h = img.getHeight();
+
+        for(int page = Math.max(0, y/8) ; page < Math.min(8, Math.ceil((y+h)/8.0)) ; page ++) {
+            for(int seg = Math.max(0, x) ; seg < Math.min(128, x+w) ; seg ++) {
+                byte i = getImageByte(img, seg-x, page*8-y);
+                byte m = getMaskByte(img, seg-x, page*8-y);
+                pixels[page*128+seg]=(byte)((pixels[page*128+seg] & (m ^ 0xff)) | (mask(pixels[page*128+seg], i) & m));
+            }
+        }
+
+
+        //TODO: don't write the whole goddamn screen if you don't have to.
+        byte[] data = new byte[pixels.length+1];
+        data[0] = 0x40;
+        for(int i=0;i<pixels.length;i++)
+            data[i+1]=pixels[i];
+        i2c.writeBytes(dev, data);
+    }
+
+    public byte mask(byte original, byte overlay)
+    {
+        switch(mask) {
+            case XOR:
+                return (byte)(original ^ overlay);
+            case AND:
+                return (byte)(original & overlay);
+            case OR:
+                return (byte)(original | overlay);
+            case ATOP:
+                return overlay;
+        }
+        return overlay;
+    }
+
+    public byte getMaskByte(BufferedImage img, int x, int y) {
+        int b = 0x00;
+        for(int i=y+8-1;i>=y;i--)
+        {
+            b = b << 1;
+            if(i>=0 && i <img.getHeight())
+            {
+                b |= 0x01;
+            }
+        }
+        return (byte) b;
+    }
+
+
+    public byte getImageByte(BufferedImage img, int x, int y) {
+        int b = 0x00;
+        for(int i=y+8-1;i>=y;i--)
+        {
+            b = b << 1;
+            if(i>=0 && i <img.getHeight())
+            {
+                b |= convertPixel(img.getRGB(x, i));
+            }
+        }
+        return (byte) b;
+    }
+
+    public int convertPixel(int rgb) {
+        return ( ((rgb >> 0) & 0xff) > 0 ||
+                ((rgb >> 8) & 0xff) > 0 ||
+                ((rgb >> 16) & 0xff) > 0
+                ? 0x01 :
+                0x00
+        );
+    }
 	
 	
 	@Override
-	public void set(Object value) {
-		// TODO Auto-generated method stub
+	public void set(String key, Object value) {
+
+        if(value instanceof ImageOverlay) {
+            ImageOverlay overlay = (ImageOverlay) value;
+            blitImage(overlay.image, overlay.x, overlay.y);
+        } else {
+            log.log("expected ImageOverlay but got " + value.getClass());
+        }
 		
 	}
 	

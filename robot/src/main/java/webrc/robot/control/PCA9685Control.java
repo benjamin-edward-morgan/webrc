@@ -53,18 +53,22 @@ public class PCA9685Control extends Control {
     I2C i2c;
 
     I2CDevice dev = null;
+    public int bus;
+    public int device;
+    public int prescale = 30;
 
     public void setBus(int bus) {
         this.bus = bus;
     }
 
-    public int bus;
-
     public void setDevice(int device) {
         this.device = device;
     }
 
-    public int device;
+    public void setPrescale(int prescale) {
+        this.prescale=prescale;
+    }
+
 
 	public PCA9685Control() {
     }
@@ -87,7 +91,11 @@ public class PCA9685Control extends Control {
 					
 					byte[] modes = new byte[]{mode1};
 					i2c.writeBytesToRegister(dev, modes, MODE1);
-					
+
+    //
+    //                    byte[] prescaleArr = new byte[]{(byte)(prescale & 0xff)};
+    //                    i2c.writeBytesToRegister(dev, prescaleArr, PRE_SCALE);
+    //
 					//put the board to sleep on shutdown
 					Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
 						@Override
@@ -104,7 +112,7 @@ public class PCA9685Control extends Control {
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(String key, Object value) {
 		//TODO: use allcall and board level flags
 	}
 	

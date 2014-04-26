@@ -34,14 +34,14 @@ public class Controls extends Pubscriber {
 
 	public void notify(Map<String, Object> values) {
 		if (values != null)
-			for (Object key : values.keySet()) {
+			for (String key : values.keySet()) {
 
 				if (controls.containsKey(key)) {
 					Object value = values.get(key);
 
 					try {
 						Control control = controls.get(key);
-						control.set(value);
+						control.set(key, value);
 					} catch (Exception e) {
 						// class cast exception possible here
 						log.log("Could not set control value");

@@ -1,5 +1,7 @@
 package webrc.robot.controller;
 
+import webrc.WebRcLog;
+
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +12,9 @@ import java.util.Map;
 
 class SocketController extends Controller {
 
-	String host;
+    WebRcLog log = WebRcLog.getLog(this);
+
+    String host;
 	int port;
 
 	public SocketController() {
@@ -34,9 +38,11 @@ class SocketController extends Controller {
 						for (;;) {
 							Map<String, Object> values = JsonToMap(streamToString(is));
 
-							if(s.isClosed() || values == null)
+                            log.log("recieved:" + values.toString());
+
+                            if(s.isClosed() || values == null)
 							{
-								System.out.println("socket closed");
+								log.log("socket closed");
 								break;
 
 							}
@@ -45,14 +51,14 @@ class SocketController extends Controller {
 						}
 
 					} catch (UnknownHostException e) {
-						e.printStackTrace();
+						log.log(e);
 
 					} catch (IOException e) {
-						e.printStackTrace();
+						log.log(e);
 
 					}
 					
-					System.out.println("attemptng reconnection in 10 seconds...");
+					log.log("attemptng reconnection in 10 seconds...");
 					sleep(10000);
 
 					
@@ -70,7 +76,6 @@ class SocketController extends Controller {
 		
 		//todo: replace with something cooler
 		json = json.trim();
-		System.out.println("json: " + json);
 		if (json.startsWith("{") && json.endsWith("}")) {
 			Map<String, Object> map = new HashMap<String, Object>();
 
@@ -103,7 +108,7 @@ class SocketController extends Controller {
 		try {
 			Thread.sleep(i);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			//ok
 		}
 	}
 

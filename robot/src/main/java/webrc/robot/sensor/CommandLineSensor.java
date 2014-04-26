@@ -1,12 +1,23 @@
 package webrc.robot.sensor;
 
+import webrc.WebRcLog;
+
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Created with IntelliJ IDEA.
+ * Used to create sensors that change value
+ * based on command line programs.
+ *
+ * We use regular expressions to target values
+ * in command line output
  * User: benjaminmorgan
  * Date: 4/12/14
  * Time: 8:21 PM
@@ -14,74 +25,135 @@ import java.io.InputStreamReader;
  */
 public class CommandLineSensor extends Sensor {
 
-    public NetworkStatusSensor() {
+    WebRcLog log = WebRcLog.getLog(this);
 
+    private String command;
+    private Map<String, String> regexs;
+    private int updatePeriod = 1000; //default to 1 second
+
+    public CommandLineSensor() {
     }
 
-//    @PostConstruct
-//    public void init()
-//    {
-//
-//    }
+    public void setCommand(String command) {
+        this.command = command;
+    }
 
-    public void getNetworkInterfaces()
+    public void setRegexs(Map<String, String> regexs) {
+        this.regexs = regexs;
+    }
+
+    public void setUpdatePeriod(int updatePeriod) {
+        this.updatePeriod = updatePeriod;
+    }
+
+
+    @PostConstruct
+    public void init()
     {
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                for(;;) {
+
+                    //parse command line output
+                    BufferedReader reader = getCommandLineOutput(command);
+                    StringBuilder builder = new StringBuilder();
+                    try {
+                        String line = null;
+                        while((line = reader.readLine()) != null)
+                            builder.append(line);
+                    } catch (IOException e) {
+                        log.log(e);
+                    }
+                    Map<String, Object> values = parseRegexs(builder.toString());
+
+                    //publish readings
+                    publish(values);
+
+                    //sleep for update period
+                    try {
+                        Thread.sleep(updatePeriod);
+                    } catch (InterruptedException e) {
+                        log.log(e);
+                    }
+
+                }
+            }
+        });
+
+        t.setDaemon(false);
+
+        t.start();
+    }
+
+    public BufferedReader getCommandLineOutput(String command) {
         try {
-            Process p = Runtime.getRuntime().exec("ifconfig");
+            Process p = Runtime.getRuntime().exec(command);
 
             InputStream in = p.getInputStream();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-            while(reader.ready())
-              System.out.println(reader.readLine());
-
-
+            return reader;
 
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.log("Error running command: " + command);
+            log.log(e);
         }
+
+        return null;
     }
 
+    /**
+     * Regular expressions that are not matched null is returned with the key.
+     * Regular expressions that match and have no capture groups return the entire match
+     * Regular expressions that match and have at least 1 capture group return the first capture group
+     * @param input
+     * @return
+     */
+    public Map<String, Object> parseRegexs(String input) {
 
+        Map<String, Object> results = new HashMap<String, Object>();
+            for(String key : regexs.keySet()) {
 
+                String regex = regexs.get(key);
+                Pattern p = Pattern.compile(regex);
 
-//    {
-//        try {
-//            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-//            while(interfaces.hasMoreElements()) {
-//                NetworkInterface inter = interfaces.nextElement();
-//                System.out.println(inter);
-//                System.out.println("displayname:" + inter.getDisplayName());
-//                System.out.println("hardware addres:" + inter.getHardwareAddress());
-//                System.out.println("index:" + inter.getIndex());
-//                System.out.println("mtu:" + inter.getMTU());
-//                System.out.println("name:" + inter.getName());
-//                System.out.println("parent" + inter.getParent());
-//
-//                Enumeration<InetAddress> ipaddresses = inter.getInetAddresses();
-//                while(ipaddresses.hasMoreElements())
-//                {
-//                    InetAddress inet = ipaddresses.nextElement();
-//                    System.out.println(inet);
-//                    System.out.println(inet.getCanonicalHostName());
-//                    System.out.println(inet.getHostAddress());
-//                    System.out.println(inet.getHostName());
-//                }
-//
-//                System.out.println();
-//            }
-//
-//
-//
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        }
-//    }
+                Matcher m = p.matcher(input);
 
+                if(m.find()) {
+                    if(m.groupCount() == 0)
+                        results.put(key, m.group(0));
+                    else
+                        results.put(key,m.group(1));
+                } else {
+                    results.put(key, null);
+                }
+
+            }
+        return results;
+    }
+
+    String letters = "qwertyuiopasdfghjklzxcvbnm";
+    public String randomString() {
+        int l = (int)(Math.random()*10);
+        String s = "";
+        for(int i=0;i<l;i++)
+            s+=letters.charAt((int)(Math.random()*letters.length()));
+        return s;
+    }
 
     public static void main(String[] args)
     {
-            new NetworkStatusSensor().getNetworkInterfaces();
+        CommandLineSensor sensor = new CommandLineSensor();
+
+        sensor.setCommand("ifconfig");
+
+        Map<String, String> regexs = new HashMap<String, String>();
+        regexs.put("ip", "en1:.*inet (\\d+\\.\\d+\\.\\d+\\.\\d+)");
+
+        sensor.setRegexs(regexs);
+
+        sensor.init();
     }
 }

@@ -10,6 +10,6 @@ public abstract class Control {
 	 * changes some value (a motor or something)
 	 * @param value
 	 */
-	public abstract void set(Object value);
+    public abstract void set(String key, Object value);
 	
 }

@@ -14,10 +14,47 @@
         <property name="testMode" value="true"/>
     </bean>
 
+    <!-- sensors -->
+    <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="ifconfig"/>
+        <property name="regexs">
+            <map>
+                <!--mac-->
+                <entry key="ip" value="en1:.*inet (\d+\.\d+\.\d+\.\d+)"/>
+                <entry key="rx" value="en1:.*media: ([a-z]+)"/>
+                <entry key="tx" value="en1:.*status: ([a-z]+)"/>
+
+
+                <!--raspberry-->
+                <!--<entry key="ip" value="wlan0.*inet addr:(\d+\.\d+\.\d+\.\d+)"/>-->
+                <!--<entry key="tx" value="wlan0.*RX packets:(\d+)"/>-->
+                <!--<entry key="rx" value="wlan0.*TX packets:(\d+)"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="iwconfig"/>
+        <property name="regexs">
+            <map>
+                <!--raspberry-->
+                <entry key="ssid" value="wlan0.*ESSID:&quot;([^&quot;]*)&quot;"/>
+                <entry key="bitrate" value="wlan0.*Bit Rate:(\d+\.\d+ [KMG]b/s)"/>
+                <entry key="linkQuality" value="wlan0.*Link Quality=(\d+/\d+)"/>
+                <entry key="signal" value="wlan0.*Signal level=(\d+/\d+)"/>
+                <entry key="noise" value="wlan0.*Noise level=(\d+/\d+)"/>
+            </map>
+        </property>
+    </bean>
+
     <!--controllers are both publishers and subscribers-->
     <bean id="socketController" class="webrc.robot.controller.SocketController">
         <property name="host" value="localhost"/>
         <property name="port" value="8081"/>
+    </bean>
+
+    <bean id="screenController" class="webrc.robot.controller.ScreenController">
+
     </bean>
 
     <bean id="i2c" class="webrc.robot.util.I2C"/>
@@ -34,6 +71,7 @@
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
         <property name="device" value="0x40"/>
+        <property name="prescale" value="30"/>
     </bean>
 
 
@@ -90,8 +128,8 @@
     <bean id="speedLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
-        <constructor-arg index="2" value="0"/>
-        <constructor-arg index="3" value="0.01"/>
+        <constructor-arg index="2" value="0.2"/>
+        <constructor-arg index="3" value="0.4"/>
         <constructor-arg index="4" ref="speedPwmControl"/>
     </bean>
 
