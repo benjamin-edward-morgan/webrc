@@ -2,10 +2,10 @@ package webrc.messaging;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,25 +24,21 @@ public abstract class Pubscriber {
         this.messageService = messageService;
     }
 
-    protected void publish(Map<String, Object> values)
-    {
+    protected void publish(Map<String, Object> values) {
         messageService.publish(values);
     }
 
-    protected void publishOne(String key, Object value)
-    {
+    protected void publishOne(String key, Object value) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(key, value);
         publish(map);
     }
 
-    protected void subscribe(Set<String> keys)
-    {
+    protected void subscribe(Set<String> keys) {
         messageService.subscribe(keys, this);
     }
 
-    protected void subscribe(String key)
-    {
+    protected void subscribe(String key) {
         Set<String> set = new HashSet<String>();
         set.add(key);
         subscribe(set);

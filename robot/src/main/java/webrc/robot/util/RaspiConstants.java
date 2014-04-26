@@ -13,10 +13,8 @@ import com.pi4j.io.i2c.I2CBus;
  */
 public class RaspiConstants {
 
-    public static Pin getPin(int pinNumber)
-    {
-        switch(pinNumber)
-        {
+    public static Pin getPin(int pinNumber) {
+        switch (pinNumber) {
             case 0:
                 return RaspiPin.GPIO_00;
             case 1:
@@ -66,17 +64,15 @@ public class RaspiConstants {
 
     }
 
-    public static int getBus(int busNumber)
-    {
-         switch(busNumber)
-         {
-             case 0:
-                 return I2CBus.BUS_0;
-             case 1:
-                 return I2CBus.BUS_1;
-             default:
-                 return -1;
-         }
+    public static int getBus(int busNumber) {
+        switch (busNumber) {
+            case 0:
+                return I2CBus.BUS_0;
+            case 1:
+                return I2CBus.BUS_1;
+            default:
+                return -1;
+        }
     }
 
 }

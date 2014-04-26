@@ -19,11 +19,9 @@ public class MessageService {
     public MessageService() {
     }
 
-
     public void publish(Map<String, Object> values) {
         Set<Pubscriber> subscribers = keySubscribers.getBforA(values.keySet());
-        for(Pubscriber subscriber : subscribers)
-        {
+        for (Pubscriber subscriber : subscribers) {
             //TODO: only notify the subscriber about what it has subscribed to
             subscriber.notify(values);
         }

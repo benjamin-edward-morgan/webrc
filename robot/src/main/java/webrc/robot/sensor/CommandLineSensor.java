@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Used to create sensors that change value
  * based on command line programs.
- *
+ * <p/>
  * We use regular expressions to target values
  * in command line output
  * User: benjaminmorgan
@@ -48,19 +48,18 @@ public class CommandLineSensor extends Sensor {
 
 
     @PostConstruct
-    public void init()
-    {
-        Thread t = new Thread(new Runnable(){
+    public void init() {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                for(;;) {
+                for (; ; ) {
 
                     //parse command line output
                     BufferedReader reader = getCommandLineOutput(command);
                     StringBuilder builder = new StringBuilder();
                     try {
                         String line = null;
-                        while((line = reader.readLine()) != null)
+                        while ((line = reader.readLine()) != null)
                             builder.append(line);
                     } catch (IOException e) {
                         log.log(e);
@@ -108,43 +107,44 @@ public class CommandLineSensor extends Sensor {
      * Regular expressions that are not matched null is returned with the key.
      * Regular expressions that match and have no capture groups return the entire match
      * Regular expressions that match and have at least 1 capture group return the first capture group
+     *
      * @param input
      * @return
      */
     public Map<String, Object> parseRegexs(String input) {
 
         Map<String, Object> results = new HashMap<String, Object>();
-            for(String key : regexs.keySet()) {
+        for (String key : regexs.keySet()) {
 
-                String regex = regexs.get(key);
-                Pattern p = Pattern.compile(regex);
+            String regex = regexs.get(key);
+            Pattern p = Pattern.compile(regex);
 
-                Matcher m = p.matcher(input);
+            Matcher m = p.matcher(input);
 
-                if(m.find()) {
-                    if(m.groupCount() == 0)
-                        results.put(key, m.group(0));
-                    else
-                        results.put(key,m.group(1));
-                } else {
-                    results.put(key, null);
-                }
-
+            if (m.find()) {
+                if (m.groupCount() == 0)
+                    results.put(key, m.group(0));
+                else
+                    results.put(key, m.group(1));
+            } else {
+                results.put(key, null);
             }
+
+        }
         return results;
     }
 
     String letters = "qwertyuiopasdfghjklzxcvbnm";
+
     public String randomString() {
-        int l = (int)(Math.random()*10);
+        int l = (int) (Math.random() * 10);
         String s = "";
-        for(int i=0;i<l;i++)
-            s+=letters.charAt((int)(Math.random()*letters.length()));
+        for (int i = 0; i < l; i++)
+            s += letters.charAt((int) (Math.random() * letters.length()));
         return s;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         CommandLineSensor sensor = new CommandLineSensor();
 
         sensor.setCommand("ifconfig");
