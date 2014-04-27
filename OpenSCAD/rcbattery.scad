@@ -1,8 +1,10 @@
 /* rcbattery */
 
+//rcbattery();
 
 module rcbattery() {
 	
+	color([0.2,0.2,0.2])
 	hull() {
 
 		cube([4.32, 2.6, 14.0], center=true);
@@ -13,4 +15,3 @@ module rcbattery() {
 	}
 }
 
-rcbattery();
