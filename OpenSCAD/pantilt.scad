@@ -25,7 +25,7 @@ Assuming front view, one servo connects to the underSide of the piece and the ot
 
 With a top view orientation the part appears as an L shape, a flat rectangle along the x axis and a flat rectangle joined with a half circle on the y axis. Two hexagons are extruded into the piece for use for inserting the screws into the horns. Hexagons rather than circles were chosen for this purpose to prevent 45 degree rule printing complications.*/
 
-epsilon=.001; //This small value prevents problematic rendering.
+epsilon=.1; //This small value prevents problematic rendering.
 
 /*Creating the Arm*/
 
@@ -41,7 +41,7 @@ underSideHeight=topSideWidth;
 
 /*Set the position of the hornScrewEntrys.*/
 xHornScrewEntry=37;
-yHornScrewEntry=50;
+yHornScrewEntry=57;
 
 module tiltArm(){
 //Join the topSide and underSide
@@ -50,6 +50,9 @@ module tiltArm(){
 	/*Construct topSide*/
 	cube(size=[topSideHeight,topSideWidth,extrusionHeight], center=false); //Construct topSide rectangle
 	translate(topSideHeight, 0, extrusionMid)
+	translate([0,topSideHeight,extrusionMid])
+	rotate([0,90,0])
+	cylinder(h=topSideWidth,r=extrusionMid, center=false, $fn=100); //Construct curved surface
 	/*Construct underSide*/
 	cube(size=[underSideHeight,underSideWidth,extrusionHeight], center=false);//Construct underSide rectangle
 	}
@@ -61,42 +64,61 @@ module tiltArm(){
 /*Constructing the hornScrewEntrys*/
 module hornScrewEntry(){
 	//topSide hornScrew
-	translate([xHornScrewEntry,0,extrusionMid])
+	translate([xHornScrewEntry,topSideWidth+epsilon,extrusionMid])
 	rotate([90,0,0])
-	cylinder(h=topSideWidth+epsilon, r=3, center=false, $fn=6);
+	cylinder(h=topSideWidth+2*epsilon, r=3, center=false, $fn=6);
 
 	//underSide hornScrew
-	translate([0,yHornScrewEntry,extrusionMid])
+	translate([-epsilon,yHornScrewEntry,extrusionMid])
 	rotate([0,90,0])
-	cylinder(h=topSideWidth+epsilon, r=3, center=false, $fn=6);
+	cylinder(h=topSideWidth+2*epsilon, r=3, center=false, $fn=6);
 }
 
+/*Subtracting the hornScrewEntrys*/
 module insertHornScrews(){
 difference(){
 	tiltArm(); hornScrewEntry();
 	}
 }
 
+/*Constructing the screwPinEntrys*/
 module screwPinEntry(){
+	//undersideSide pinScrews
+	translate([xHornScrewEntry,topSideWidth+epsilon,extrusionTop])
+	rotate([90,0,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //top
+
+	translate([xHornScrewEntry,topSideWidth+epsilon,extrusionBottom])
+	rotate([90,0,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //bottom
+
+	translate([xHornScrewEntry+6,topSideWidth+epsilon,extrusionMid])
+	rotate([90,0,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //left
+
+	translate([xHornScrewEntry-6,topSideWidth+epsilon,extrusionMid])
+	rotate([90,0,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //right
+
 	//topSide pinScrews
-	translate([xHornScrewEntry,8,extrusionTop])
-	rotate([90,0,0])
-	cylinder(h=topSideWidth+epsilon, r=1, center=false, $fn=6); //top
-
-	translate([xHornScrewEntry,8,extrusionBottom])
-	rotate([90,0,0])
-	cylinder(h=topSideWidth+epsilon, r=1, center=false, $fn=6); //bottom
-
-	//underSide pinScrews
-	translate([0,yHornScrewEntry,extrusionTop])
+	translate([-epsilon,yHornScrewEntry,extrusionTop])
 	rotate([0,90,0])
-	cylinder(h=topSideWidth+epsilon, r=1, center=false, $fn=6); //top
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //top
 
-	translate([0,yHornScrewEntry,extrusionBottom])
+	translate([-epsilon,yHornScrewEntry,extrusionBottom])
 	rotate([0,90,0])
-	cylinder(h=topSideWidth+epsilon, r=1, center=false, $fn=6); //bottom
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //bottom
+
+	translate([-epsilon,yHornScrewEntry-6,extrusionMid])
+	rotate([0,90,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //left
+
+	translate([-epsilon,yHornScrewEntry+6,extrusionMid])
+	rotate([0,90,0])
+	cylinder(h=topSideWidth+2*epsilon, r=1, center=false, $fn=6); //right
 }
 
+/*Subtracting the screwPinEntrys*/
 difference(){
 	insertHornScrews(); screwPinEntry();	
 }
