@@ -1,4 +1,4 @@
-
+include<differential_assembly.scad>
 include<motor.scad>;
 include<dev_boards.scad>;
 include<rcbattery.scad>;
@@ -13,8 +13,12 @@ module wheel() {
 	import("OpenRC_Truggy_Rim.A.1.stl");
 }
 
+rotate(90)
+differential();
+
 
 module 4wheels() {
+color("silver") {
 	translate([wheelW/2,0,0])
 	rotate(90)
 		wheel();
@@ -30,7 +34,7 @@ module 4wheels() {
 	translate([-wheelW/2,250,0])
 	rotate(-90)
 		wheel();
-
+}
 }
 
 4wheels();

@@ -1,4 +1,7 @@
 
+//differential();
+
+
 module diff_axle1() {
 import("OpenRC_110_RC_Differential/Axle_to_CVD.A.6.stl");
 }
@@ -23,27 +26,43 @@ module diff_side_gear() {
 import("OpenRC_110_RC_Differential/Side_Gear.A.0.stl");
 }
 
-//diff_axle1();
+
+
+module differential() {
 diff_side_gears();
 diff_center_gears();
 diff_casing();
-//diff_axles();
+diff_axles();
+}
 
 
 
 module diff_casing() {
-//diff_side1();
+color([0.5,0.5,0.5,0.5]) {
+	diff_side1();
 
-rotate(90)
-diff_side2();
+	rotate(90)
+	diff_side2();
+	}
 }
 
 module diff_axles() {
+color("purple") {
 rotate([0,90,0])
 diff_axle2();
+
+translate([0,-6,0])
+rotate([90,0,0])
+diff_axle1();
+
+translate([0,6,0])
+rotate([-90,0,0])
+diff_axle1();
+}
 }
 
 module diff_side_gears() {
+color("green") {
 rotate([180/15,0,0])
 translate([4,0,0])
 rotate([0,90,0])
@@ -54,8 +73,10 @@ translate([-4,0,0])
 rotate([0,-90,0])
 diff_side_gear();
 }
+}
 
 module diff_center_gears() {
+color("blue") {
 translate([0,-4,0])
 rotate([90,0,0])
 diff_center_gear();
@@ -64,5 +85,6 @@ rotate([0,90,0])
 translate([0,4,0])
 rotate([-90,0,0])
 diff_center_gear();
+}
 }
 
