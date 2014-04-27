@@ -16,13 +16,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 @EnableAutoConfiguration
 public class ServerMain {
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         SpringApplication sa = new SpringApplication(ServerMain.class, "beans.xml");
-
-
-
-
         sa.run(args);
     }
 }

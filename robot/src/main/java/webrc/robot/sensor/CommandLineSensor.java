@@ -80,7 +80,7 @@ public class CommandLineSensor extends Sensor {
             }
         });
 
-        t.setDaemon(false);
+        t.setDaemon(true);
 
         t.start();
     }

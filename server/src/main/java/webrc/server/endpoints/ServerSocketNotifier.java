@@ -21,22 +21,6 @@ import java.util.Map;
  */
 public class ServerSocketNotifier extends Pubscriber {
 
-//    private static ServerSocketNotifier SSN = null;
-//
-//    public static ServerSocketNotifier getSSN() {
-//        if (SSN == null) {
-//            Map<String, Object> values = new HashMap<String, Object>();
-//            values.put("pan", 0);
-//            values.put("tilt", 0);
-//
-//            SSN = new ServerSocketNotifier(8081, values);
-//        }
-//
-//        return SSN;
-//
-//    }
-
-
     public void setPort(int port) {
         this.port = port;
     }
@@ -61,11 +45,6 @@ public class ServerSocketNotifier extends Pubscriber {
             }
         }).start();
     }
-
-//    public void update(Map<String, Object> values) {
-//        this.values.putAll(values);
-//        Sleeper.interruptSleepingThreads(null);
-//    }
 
     @Override
     protected void notify(Map<String, Object> values) {
@@ -120,17 +99,15 @@ public class ServerSocketNotifier extends Pubscriber {
                     e.printStackTrace();
 
                 }
-
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
     }
 
     public String toJson(Map<String, Object> map) {
+        //TODO: replace with jackson
         if (map == null)
             return "{}";
         StringBuilder sb = new StringBuilder("{");
@@ -142,54 +119,4 @@ public class ServerSocketNotifier extends Pubscriber {
         sb.append('}');
         return sb.toString();
     }
-
-
-
-
-
-//    public static void main(String[] args) {
-//        Map<String, Object> values = new HashMap<String, Object>();
-//        values.put("pan", 0);
-//        values.put("tilt", 0);
-//
-//        final ServerSocketNotifier ssn = new ServerSocketNotifier(8081, values);
-//
-//
-//        JFrame jframe = new JFrame("sliders");
-//
-//        final JSlider pan = new JSlider(-100, 100, 50);
-//        pan.addChangeListener(new ChangeListener() {
-//            @Override
-//            public void stateChanged(ChangeEvent arg0) {
-//                Map<String, Object> values = new HashMap<String, Object>();
-//                values.put("pan", pan.getValue());
-//                ssn.update(values);
-//            }
-//        });
-//
-//        final JSlider tilt = new JSlider(-100, 100, 50);
-//        tilt.addChangeListener(new ChangeListener() {
-//            @Override
-//            public void stateChanged(ChangeEvent arg0) {
-//                Map<String, Object> values = new HashMap<String, Object>();
-//                values.put("tilt", tilt.getValue());
-//                ssn.update(values);
-//            }
-//        });
-//
-//        Container container = new Container();
-//        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-//
-//        container.add(pan);
-//        container.add(tilt);
-//
-//        jframe.add(container);
-//
-//        jframe.setVisible(true);
-//
-//        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//    }
-
-
 }

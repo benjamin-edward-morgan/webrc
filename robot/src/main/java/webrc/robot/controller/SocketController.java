@@ -65,7 +65,7 @@ class SocketController extends Controller {
             }
         });
 
-        t.setDaemon(false);
+        t.setDaemon(true);
         t.setName("socket messaging thread");
         t.start();
 
