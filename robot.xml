@@ -33,19 +33,19 @@
         </property>
     </bean>
 
-    <bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">
-        <property name="command" value="iwconfig"/>
-        <property name="regexs">
-            <map>
-                <!--raspberry-->
-                <entry key="ssid" value="wlan0.*ESSID:&quot;([^&quot;]*)&quot;"/>
-                <entry key="bitrate" value="wlan0.*Bit Rate:(\d+\.\d+ [KMG]b/s)"/>
-                <entry key="linkQuality" value="wlan0.*Link Quality=(\d+/\d+)"/>
-                <entry key="signal" value="wlan0.*Signal level=(\d+/\d+)"/>
-                <entry key="noise" value="wlan0.*Noise level=(\d+/\d+)"/>
-            </map>
-        </property>
-    </bean>
+    <!--<bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">-->
+        <!--<property name="command" value="iwconfig"/>-->
+        <!--<property name="regexs">-->
+            <!--<map>-->
+                <!--&lt;!&ndash;raspberry&ndash;&gt;-->
+                <!--<entry key="ssid" value="wlan0.*ESSID:&quot;([^&quot;]*)&quot;"/>-->
+                <!--<entry key="bitrate" value="wlan0.*Bit Rate:(\d+\.\d+ [KMG]b/s)"/>-->
+                <!--<entry key="linkQuality" value="wlan0.*Link Quality=(\d+/\d+)"/>-->
+                <!--<entry key="signal" value="wlan0.*Signal level=(\d+/\d+)"/>-->
+                <!--<entry key="noise" value="wlan0.*Noise level=(\d+/\d+)"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <!--controllers are both publishers and subscribers-->
     <bean id="socketController" class="webrc.robot.controller.SocketController">

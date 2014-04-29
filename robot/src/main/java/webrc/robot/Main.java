@@ -13,7 +13,6 @@ public class Main {
 
     public static void main(String[] args) {
         FileSystemXmlApplicationContext fsxc = new FileSystemXmlApplicationContext("robot.xml");
-
         fsxc.start();
 
     }
