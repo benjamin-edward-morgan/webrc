@@ -32,8 +32,8 @@ module miniservo(base_x, base_y, base_z,
 	color("LightBlue") translate([0, base_y, base_z - fix_offset]) 	
 difference(){
 	cube([base_x, fix_y, fix_z]);
-	translate([4,2,0]) cylinder(r=2.2,h=fix_z+1, $fn=100);
-	translate([8,2,0]) cylinder(r=2.2,h=fix_z+1, $fn=100);
+	translate([6,2,0]) cylinder(r=2,h=fix_z+1, $fn=100);
+
 }
 
 	color("grey") translate([base_x/2, base_y-cyl_offset, base_z]) 
@@ -43,7 +43,7 @@ difference(){
 }
 
 module TG9() {
-	base_x = 12; base_y = 32.5; base_z = 29;
+	base_x = 12; base_y = 23; base_z = 26;
 	fix_offset = 5; fix_y = 4; fix_z = 2;
 	cyl_height = 5; cyl_radius = 6;	cyl_offset = 6;
 	smallcyl_radius = 3; smallcyl_offset = 15;
