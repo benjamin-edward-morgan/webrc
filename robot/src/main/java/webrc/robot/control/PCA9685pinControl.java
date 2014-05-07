@@ -44,8 +44,8 @@ public class PCA9685pinControl extends Control {
         byte[] onbytes = new byte[]{(byte) (intVal & 0xff), (byte) ((intVal >> 8) & 0xff)};
         byte[] offbytes = new byte[]{0x0, 0x0};
 
-        i2c.writeBytesToRegister(pca9685Control.dev, onbytes, PCA9685Control.LED_ON_LOW(pin));
-        i2c.writeBytesToRegister(pca9685Control.dev, offbytes, PCA9685Control.LED_OFF_LOW(pin));
+        i2c.writeBytesToRegister(pca9685Control.dev, offbytes, PCA9685Control.LED_ON_LOW(pin));
+        i2c.writeBytesToRegister(pca9685Control.dev, onbytes, PCA9685Control.LED_OFF_LOW(pin));
     }
 
     public void setPin(int pin) {

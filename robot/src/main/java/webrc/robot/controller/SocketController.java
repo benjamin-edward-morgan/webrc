@@ -36,17 +36,24 @@ class SocketController extends Controller {
                         InputStream is = s.getInputStream();
 
                         for (; ; ) {
-                            Map<String, Object> values = JsonToMap(streamToString(is));
+                            String received = streamToString(is);
+                            Map<String, Object> values = JsonToMap(received);
 
-                            log.log("recieved:" + values.toString());
+                            if(values != null) {
 
-                            if (s.isClosed() || values == null) {
-                                log.log("socket closed");
-                                break;
+                                log.log("recieved:" + values.toString());
 
+                                if (s.isClosed() || values == null) {
+                                    log.log("socket closed");
+                                    break;
+
+                                }
+
+                                publish(values);
+                            }      else {
+                                log.log("**VALUES WAS NULL: " + received);
                             }
 
-                            publish(values);
                         }
 
                     } catch (UnknownHostException e) {
