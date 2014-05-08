@@ -28,11 +28,9 @@ include<cameraservo.scad>;
 
 motorDisp=14;
 //motorSlide=;
-motorHeight=10;
-motor2Height=-60;
-motor2Disp=-20;
-motor2Slide=-25;
 
-rotate([0,-90,0]) translate([motorDisp,35,-40])TG9(); //bottomSide motor
-rotate([0,90,90]) translate([motor2Disp,motor2Height,motor2Slide]) TG9(); //topSide motor
+translate([xHornScrewEntry,0,extrusionMid]) rotate([0,-90,-90]) translate([-6, -26.5, -34])TG9(); //bottomSide motor
+//translate([6,extrusionTop,extrusionMid]) rotate([0,-90,0]) translate([-6, xHornScrewEntry, -34])TG9(); //topSide motor
+rotate([0,0,90]) translate([yHornScrewEntry,-topSideWidth,extrusionMid]) rotate([0,-90,-90]) translate([-6, -26.5, -34])TG9(); 
+
 pantilt();
