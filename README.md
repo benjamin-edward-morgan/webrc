@@ -1,6 +1,7 @@
+****
 #webrc
-=====
 An awesome java platform for raspberry pi to create autonomous and remote controlled robots.
+****
 
 ##robot
 This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. Controllers read sensor values and output actuator commands to perform automatic functions.
@@ -22,8 +23,7 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Enable Auto-Login:
 * run `sudo nano /etc/inittab`
-
-* comment out the following line with #
+* comment out the following line with #:
 ```
 1:2345:respawn:/sbin/getty —nuclear 38400 ttyl1
 ```
@@ -32,9 +32,8 @@ This menu can be visited again later by running `sudo raspi-config`
 1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
 ```
 
-######Set up WiFi:
+#####Set up WiFi:
 * run `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
-
 * add:
 ```
 network={
@@ -43,10 +42,21 @@ network={
     }
 ```
 
-######Enable I2C
+#####Enable I2C
 * type `sudo nano /etc/modules`
 * append following lines
 ```
 i2c-bcm2708 
 i2c-dev 
 ```
+* run `sudo nano /etc/modprobe.d/raspi-blacklist.conf`
+* comment out `blacklist i2c-bcm2708`
+* optional: run `sudo apt-get install i2c-tools`
+
+####
+Nifty command line functions
+* `ifconfig` and `iwconfig` tell you about the overall network and wifi status
+* `raspistill` and `raspivid` to take pictures and video, respectively
+* i2c-tools gives you `i2cdetect` Run: `sudo i2cdetect -y 1`
+
+
