@@ -19,32 +19,32 @@ This application runs on the raspberry pi and communicates with the server. It i
 * Select Finish. Choose Yes to reboot.
 
 This menu can be visited again later by running: 
->sudo raspi-config
+    sudo raspi-config
 
 #####Enable Auto-Login:
 * run 
->sudo nano /etc/inittab
+    sudo nano /etc/inittab
 
 * comment out the following line with #:
->1:2345:respawn:/sbin/getty —noclear 38400 ttyl1
+    1:2345:respawn:/sbin/getty —noclear 38400 ttyl1
 
 * and below it add:
->1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
+    1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
 
 ######Set up WiFi:
 * type
->sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
 
 * add:
->network={
->    ssid="yourNetworkSSID"
->    psk="yourNetworkPassword"
->}
+    network={
+        ssid="yourNetworkSSID"
+        psk="yourNetworkPassword"
+    }
 
 ######Enable I2C
 * type
->sudo nano /etc/modules
+    sudo nano /etc/modules
 * append following lines
->i2c-bcm2708 
->i2c-dev 
+    i2c-bcm2708 
+    i2c-dev 
 
