@@ -25,11 +25,11 @@ This menu can be visited again later by running `sudo raspi-config`
 * run `sudo nano /etc/inittab`
 * comment out the following line with #:
 ```
-1:2345:respawn:/sbin/getty —nuclear 38400 ttyl1
+1:2345:respawn:/sbin/getty --noclear 38400 tty1
 ```
 * and below it add:
 ```
-1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
+1:2345:respawn:/bin/login -f pi ttyl </dev/tty1 >/dev/tty1 2>&1
 ```
 
 #####Set up WiFi:
@@ -53,10 +53,10 @@ i2c-dev
 * comment out `blacklist i2c-bcm2708`
 * optional: run `sudo apt-get install i2c-tools`
 
-####
+#####
 Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status
 * `raspistill` and `raspivid` to take pictures and video, respectively
-* i2c-tools gives you `i2cdetect` Run: `sudo i2cdetect -y 1`
+* i2c-tools gives you `i2cdetect` This command allows you to view the addresses of attached i2c devices. Run: `sudo i2cdetect -y 1`
 
 
