@@ -31,8 +31,6 @@ This menu can be visited again later by running:
 * and below it add:
 >1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
 
-* save and reboot
-
 ######Set up WiFi:
 * type
 >sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
@@ -42,5 +40,11 @@ This menu can be visited again later by running:
 >    ssid="yourNetworkSSID"
 >    psk="yourNetworkPassword"
 >}
-* reboot
+
+######Enable I2C
+* type
+>sudo nano /etc/modules
+* append following lines
+>i2c-bcm2708 
+>i2c-dev 
 
