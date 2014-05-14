@@ -1,18 +1,9 @@
 #webrc
 =====
-
 An awesome java platform for raspberry pi to create autonomous and remote controlled robots.
 
-=====
-
-##building
-just run 
-> mvm clean install
-
 ##robot
-=====
-This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. There Controllers that read sensor values and output actuator commands to perform automatic functions.
-After building, a jar 
+This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. Controllers read sensor values and output actuator commands to perform automatic functions.
 
 ####Setting up the Image
 
@@ -48,7 +39,8 @@ This menu can be visited again later by running:
 
 * add:
 >network={
-    ssid="yourNetworkSSID"
-    psk="yourNetworkPassword"
-}
+>    ssid="yourNetworkSSID"
+>    psk="yourNetworkPassword"
+>}
+* reboot
 
