@@ -1,7 +1,30 @@
-****
 #webrc
 An awesome java platform for raspberry pi to create autonomous and remote controlled robots.
 ****
+
+##TODOs:
+* replace Spring Boot with something more efficient for the raspberry pi, speed up start up time of robot application
+* enable running the server and robot as one application (or separate) so the server can run on the pi
+* replace messaging system with open source package
+* add support for INA219 current and voltage sensor
+* add filtering for sensor values communicated to the server
+* integrate live streaming, photo/video capture
+
+##building and running the project
+* make sure you are running Java 7, and that the JAVA home environment variable points to the jdk7 home directory
+* from webrc run `mvm clean install`
+
+The common module compiles a jar that the other projects depend on.
+
+The robot runnable jar is built as `robot/target/robot-0.1.0-SNAPSHOT-jar-with-dependencies.jar` and can be invoked with `sudo java -jar robot/target/robot-0.1.0-SNAPSHOT-jar-with-dependencies.jar` The `robot.xml` file must be in the directory where you invoke the robot application from.
+
+The server can be started from the command line like this:
+````
+cd server
+mvm spring-boot:run
+````
+
+To use the UI, visit `<server’s ip address>:8080/rc.html` from a phone/tablet/pc.
 
 ##robot
 This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. Controllers read sensor values and output actuator commands to perform automatic functions.
@@ -53,8 +76,7 @@ i2c-dev
 * comment out `blacklist i2c-bcm2708`
 * optional: run `sudo apt-get install i2c-tools`
 
-#####
-Nifty command line functions
+#####Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status
 * `raspistill` and `raspivid` to take pictures and video, respectively
 * i2c-tools gives you `i2cdetect` This command allows you to view the addresses of attached i2c devices. Run: `sudo i2cdetect -y 1`
