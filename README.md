@@ -9,10 +9,17 @@ An awesome java platform for raspberry pi to create autonomous and remote contro
 * add support for INA219 current and voltage sensor
 * add filtering for sensor values communicated to the server
 * integrate live streaming, photo/video capture
+* implement a more robust robot to server communication
+* add command line options to change configuration files
 
 ##building and running the project
-* make sure you are running Java 7, and that the JAVA home environment variable points to the jdk7 home directory
-* from webrc run `mvm clean install`
+* run `git clone https://github.com/benjamin-edward-morgan/webrc.git`
+* make sure you are running Java 7, and that the JAVA_HOME environment variable points to the jdk7 home directory
+* run 
+```
+cd webrc
+mvn clean install
+```
 
 The common module compiles a jar that the other projects depend on.
 
@@ -21,7 +28,7 @@ The robot runnable jar is built as `robot/target/robot-0.1.0-SNAPSHOT-jar-with-d
 The server can be started from the command line like this:
 ````
 cd server
-mvm spring-boot:run
+mvn spring-boot:run
 ````
 
 To use the UI, visit `<server’s ip address>:8080/rc.html` from a phone/tablet/pc.
