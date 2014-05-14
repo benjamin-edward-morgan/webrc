@@ -15,8 +15,7 @@ An awesome java platform for raspberry pi to create autonomous and remote contro
 ##building and running the project
 * run `git clone https://github.com/benjamin-edward-morgan/webrc.git`
 * make sure you are running Java 7, and that the JAVA_HOME environment variable points to the jdk7 home directory
-* run 
-```
+* run ```
 cd webrc
 mvn clean install
 ```
@@ -29,6 +28,10 @@ The server can be started from the command line like this:
 ````
 cd server
 mvn spring-boot:run
+````
+- NOTE: you may need to install maven by running ```
+sudo apt-get update
+sudo apt-get install maven
 ````
 
 To use the UI, visit `<server’s ip address>:8080/rc.html` from a phone/tablet/pc.
@@ -53,10 +56,8 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Enable Auto-Login:
 * run `sudo nano /etc/inittab`
-* comment out the following line with #:
-```
-1:2345:respawn:/sbin/getty --noclear 38400 tty1
-```
+* comment out the following line with #:```
+1:2345:respawn:/sbin/getty --noclear 38400 tty1```
 * and below it add:
 ```
 1:2345:respawn:/bin/login -f pi ttyl </dev/tty1 >/dev/tty1 2>&1
@@ -64,8 +65,7 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Set up WiFi:
 * run `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
-* add:
-```
+* add:```
 network={
     ssid="yourNetworkSSID"
     psk="yourNetworkPassword"
@@ -74,8 +74,7 @@ network={
 
 #####Enable I2C
 * type `sudo nano /etc/modules`
-* append following lines
-```
+* append following lines```
 i2c-bcm2708 
 i2c-dev 
 ```
