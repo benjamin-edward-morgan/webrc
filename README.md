@@ -1,19 +1,22 @@
-webrc
+#webrc
 =====
 
-####webrc
 An awesome java platform for raspberry pi to create autonomous and remote controlled robots.
 
-run 
-
-###robot
 =====
-This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. There are also controllers that read sensor values and output actuator commands to perform automatic functions.
 
+##building
+just run 
+> mvm clean install
 
-##Setting up the Image
+##robot
+=====
+This application runs on the raspberry pi and communicates with the server. It is configured with robot.xml (must be in the directory that robot.jar is invoked from). This application relays information from the server, transforms it and outputs to physical hardware. This application can also read data from sensors, transform and send back to the server. There Controllers that read sensor values and output actuator commands to perform automatic functions.
+After building, a jar 
 
-#First Steps
+####Setting up the Image
+
+#####First Steps
 * Use Pi Filler or other application to image an SD card with Raspbian. (Last tested with Raspbian version 2014-01-07)
 * Insert SD card, monitor connected via HDMI, a usb keyboard and a usb wifi dongle (tested with Edimax EW-7811Un) to Raspberry Pi and boot up.
 * In the “Raspberry Pi Software Configuration Tool” choose option 1: Expand Filesystem and choose ok.
@@ -27,21 +30,25 @@ This application runs on the raspberry pi and communicates with the server. It i
 This menu can be visited again later by running: 
 >sudo raspi-config
 
-#Enable Auto-Login:
+#####Enable Auto-Login:
 * run 
 >sudo nano /etc/inittab
+
 * comment out the following line with #:
 >1:2345:respawn:/sbin/getty —noclear 38400 ttyl1
+
 * and below it add:
 >1:2345:respawn:/bin/login -f pi tty1 </dev/tty1 >/dev/tty1 2>&1
+
 * save and reboot
 
-#Set up WiFi:
+######Set up WiFi:
 * type
 >sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+
 * add:
 >network={
->    ssid="yourNetworkSSID"
->    psk="yourNetworkPassword"
->}
+    ssid="yourNetworkSSID"
+    psk="yourNetworkPassword"
+}
 
