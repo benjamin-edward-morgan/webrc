@@ -58,7 +58,8 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Enable Auto-Login:
 * run `sudo nano /etc/inittab`
-* comment out the following line with #:```
+* comment out the following line with #:
+```
 1:2345:respawn:/sbin/getty --noclear 38400 tty1```
 * and below it add:
 ```
@@ -67,7 +68,8 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Set up WiFi:
 * run `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
-* add:```
+* add:
+```
 network={
     ssid="yourNetworkSSID"
     psk="yourNetworkPassword"
@@ -76,12 +78,13 @@ network={
 
 #####Enable I2C
 * type `sudo nano /etc/modules`
-* append following lines```
+* append following lines
+```
 i2c-bcm2708 
 i2c-dev 
 ```
 * run `sudo nano /etc/modprobe.d/raspi-blacklist.conf`
-* comment out `blacklist i2c-bcm2708`
+* comment out `blacklist i2c-bcm2708` with #
 * optional: run `sudo apt-get install i2c-tools`
 
 #####Change Java Versions
