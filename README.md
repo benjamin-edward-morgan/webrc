@@ -14,8 +14,9 @@ An awesome java platform for raspberry pi to create autonomous and remote contro
 
 ##building and running the project
 * run `git clone https://github.com/benjamin-edward-morgan/webrc.git`
-* make sure you are running Java 7, and that the JAVA_HOME environment variable points to the jdk7 home directory
-* run ```
+* make sure you are running Java 7, and that the JAVA_HOME environment variable points to the jdk7 home directory _You Must Use an Oracle JVM_
+* run 
+```
 cd webrc
 mvn clean install
 ```
@@ -29,7 +30,8 @@ The server can be started from the command line like this:
 cd server
 mvn spring-boot:run
 ````
-- NOTE: you may need to install maven by running ```
+- NOTE: you may need to install maven by running 
+```
 sudo apt-get update
 sudo apt-get install maven
 ````
@@ -81,6 +83,10 @@ i2c-dev
 * run `sudo nano /etc/modprobe.d/raspi-blacklist.conf`
 * comment out `blacklist i2c-bcm2708`
 * optional: run `sudo apt-get install i2c-tools`
+
+#####Change Java Versions
+* use `update-java-alternatives -l` to list available java vms
+* use `sudo update-java-alternatives -s jdk-7-oracle-armhf` to enable oracle java 7
 
 #####Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status
