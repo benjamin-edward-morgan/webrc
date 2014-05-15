@@ -90,8 +90,8 @@ public class PCA9685Control extends Control {
                     byte[] modes = new byte[]{mode1};
                     i2c.writeBytesToRegister(dev, modes, MODE1);
 
-                    //                    byte[] prescaleArr = new byte[]{(byte)(prescale & 0xff)};
-                    //                    i2c.writeBytesToRegister(dev, prescaleArr, PRE_SCALE);
+                    byte[] prescaleArr = new byte[]{(byte)(prescale & 0xff)};
+                    i2c.writeBytesToRegister(dev, prescaleArr, PRE_SCALE);
 
                     //put the board to sleep on shutdown
                     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
