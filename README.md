@@ -58,9 +58,10 @@ This menu can be visited again later by running `sudo raspi-config`
 
 #####Enable Auto-Login:
 * run `sudo nano /etc/inittab`
-* comment out the following line with #:
+* comment out the following line:
 ```
-1:2345:respawn:/sbin/getty --noclear 38400 tty1```
+1:2345:respawn:/sbin/getty --noclear 38400 tty1
+```
 * and below it add:
 ```
 1:2345:respawn:/bin/login -f pi ttyl </dev/tty1 >/dev/tty1 2>&1
