@@ -15,6 +15,14 @@
     </bean>
 
     <!-- sensors -->
+
+    <bean id="powerSensor" class="webrc.robot.sensor.INA219Sensor">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x41"/>
+        <property name="key" value="battery"/>
+    </bean>
+
+
     <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
         <property name="command" value="ifconfig"/>
         <property name="regexs">
@@ -114,8 +122,8 @@
     <bean id="steeringLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
-        <constructor-arg index="2" value="0"/>
-        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="2" value="0.15"/>
+        <constructor-arg index="3" value="0.5"/>
         <constructor-arg index="4" ref="steeringPwmControl"/>
     </bean>
 

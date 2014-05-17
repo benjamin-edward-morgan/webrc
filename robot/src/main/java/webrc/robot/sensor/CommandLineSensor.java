@@ -1,7 +1,5 @@
 package webrc.robot.sensor;
 
-import webrc.WebRcLog;
-
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,8 +22,6 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class CommandLineSensor extends Sensor {
-
-    WebRcLog log = WebRcLog.getLog(this);
 
     private String command;
     private Map<String, String> regexs;
@@ -104,7 +100,7 @@ public class CommandLineSensor extends Sensor {
     }
 
     /**
-     * Regular expressions that are not matched null is returned with the key.
+     * Regular expressions that are not matched return a null value.
      * Regular expressions that match and have no capture groups return the entire match
      * Regular expressions that match and have at least 1 capture group return the first capture group
      *
