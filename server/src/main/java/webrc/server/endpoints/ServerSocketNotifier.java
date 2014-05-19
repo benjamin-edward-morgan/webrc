@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+
 
 /**
  * Accepts socket connections on a specified port and pushes json data packets
@@ -20,6 +23,8 @@ import java.util.Map;
  * @author benjaminmorgan
  */
 public class ServerSocketNotifier extends Pubscriber {
+
+    ObjectMapper objMapper = new ObjectMapper();
 
     public void setPort(int port) {
         this.port = port;
@@ -33,6 +38,8 @@ public class ServerSocketNotifier extends Pubscriber {
     final static int pollTimeout = 5000; // ms
 
     public ServerSocketNotifier() {
+
+//        objMapper.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
         values = new HashMap<String, Object>();
         this.port = port;
@@ -80,8 +87,12 @@ public class ServerSocketNotifier extends Pubscriber {
                             try {
                                 for (; ; ) {
 
-                                    outputStream.write((toJson((Map<String,Object>)values.get("")) + "\n").getBytes());
-                                    System.out.println(toJson(values));
+                                    //outputStream.write((toJson((Map<String,Object>)values.get("")) + "\n").getBytes());
+
+                                    String json = objMapper.writeValueAsString(values.get(""));
+                                    System.out.println("sending:" + json);
+
+                                    outputStream.write((json+"\n").getBytes());
                                     Sleeper.sleep("", pollTimeout);
                                 }
 

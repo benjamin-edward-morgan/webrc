@@ -8,6 +8,8 @@ import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -121,8 +123,20 @@ public class INA219Sensor extends Sensor{
 
                             log.log(key + " shunt: " + shuntVoltage*shuntLSB + "V (" + Integer.toHexString(shuntVoltage) + ")");
                             log.log(key + " bus: " + (busVoltage>>3)*busLSB + "V (" + Integer.toHexString(busVoltage) + ")");
-                            log.log(key + " power: " + power*powerLSB + "W (" + Long.toHexString(power) + ")");
-                            log.log(key + " current: " + current*currentLSB + "A (" + Long.toHexString(current) + ")");
+//                            log.log(key + " power: " + power*powerLSB + "W (" + Long.toHexString(power) + ")");
+//                            log.log(key + " current: " + current*currentLSB + "A (" + Long.toHexString(current) + ")");
+
+                            double v = busVoltage*busLSB;
+                            double c = shuntVoltage*shuntLSB/0.1;
+                            double p = c*v;
+
+
+                            Map<String, Object> values = new HashMap<String, Object>();
+                            values.put(key+".voltage", v + "(V)");
+                            values.put(key+".current", c + "(A)");
+                            values.put(key+".power", p + "(W)");
+
+
 
                         } catch (IOException e) {
                             log.log(e);

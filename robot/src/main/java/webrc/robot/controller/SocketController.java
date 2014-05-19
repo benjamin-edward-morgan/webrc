@@ -1,5 +1,11 @@
 package webrc.robot.controller;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.JsonGenerator;
+
 import webrc.WebRcLog;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +23,13 @@ class SocketController extends Controller {
     String host;
     int port;
 
+    ObjectMapper objMapper = new ObjectMapper();
+
     public SocketController() {
+//        objMapper.disable(DeserializationConfig.Feature.AUTO_CLOSE_TARGET);
+//        objMapper.disable(SerializationConfig.Feature.CLOSE_CLOSEABLE);
+        objMapper = objMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
+
     }
 
     @PostConstruct
@@ -37,21 +49,23 @@ class SocketController extends Controller {
 
                         for (; ; ) {
                             String received = streamToString(is);
-                            Map<String, Object> values = JsonToMap(received);
+//                            Map<String, Object> values = JsonToMap(received);
 
-                            if(values != null) {
+                            HashMap<String, Object> rootNode = objMapper.readValue(received, HashMap.class);
 
-                                log.log("recieved:" + values.toString());
+                            if(rootNode != null) {
 
-                                if (s.isClosed() || values == null) {
+                                log.log("recieved:" + rootNode.toString());
+
+                                if (s.isClosed() || rootNode == null) {
                                     log.log("socket closed");
                                     break;
 
                                 }
 
-                                publish(values);
+                                publish(rootNode);
                             }      else {
-                                log.log("**VALUES WAS NULL: " + received);
+                                log.log("**VALUES WAS NULL**");
                             }
 
                         }
@@ -76,38 +90,6 @@ class SocketController extends Controller {
         t.setName("socket messaging thread");
         t.start();
 
-    }
-
-    public static Map<String, Object> JsonToMap(String json) {
-
-        //todo: replace with something cooler
-        json = json.trim();
-        if (json.startsWith("{") && json.endsWith("}")) {
-            Map<String, Object> map = new HashMap<String, Object>();
-
-            json = json.substring(1, json.length() - 1);
-            String[] params = json.split(",");
-            for (String param : params) {
-                String[] ab = param.split("=");
-                if (ab.length == 2) {
-                    String a = ab[0];
-
-                    Object b = ab[1];
-
-                    try {
-                        b = Float.parseFloat(ab[1].trim());
-                    } catch (Throwable t) {
-
-                        b = ab[1];
-                    }
-
-                    map.put(a, b);
-                }
-            }
-            return map;
-        }
-
-        return null;
     }
 
     public static void sleep(int i) {
