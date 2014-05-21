@@ -6,6 +6,7 @@
 	<script src="rc.js"></script>
 	<script src="virtualjoystick.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css" />
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
 <script>
@@ -35,11 +36,6 @@
 		</div>
 	</div>
 </div>
-
-<!--
-<div id="grid"></div>
-<div id="box"></div>
--->
 <div id="container">
 	<div id="controller-left">
 		<div class="wasd">
@@ -56,6 +52,19 @@
 			<div class="down button"><span>&darr;</span></div>
 			<div class="right button"><span>&rsaquo;</span></div>
 		</div>
+	</div>
+</div>
+<div id="bottom-menu-container">
+	<div class="hud">
+		<ul>
+			<li><a href="#" id="camera-options" class="button"><i class="fa fa-camera"></i></a>
+				<ul id="camera-options-menu">
+					<li><a href="#">Normal Mode</a></li>
+					<li><a href="#">Infared Mode</a></li>
+					<li><a href="#">Night Vision Mode</a></li>
+				</ul>
+			</li>
+		</ul>
 	</div>
 </div>
 </body>

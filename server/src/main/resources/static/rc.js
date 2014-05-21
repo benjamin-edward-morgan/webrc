@@ -26,6 +26,10 @@ $(document).ready(
 			
 			var joystickUpdateTime = 100;
 
+			$("#camera-options").click(function(){
+				$("#camera-options-menu").toggle();
+			});
+
 			$(document).keydown(function(key) {
 				switch (parseInt(key.which, 10)) {
 				case driveKeyLeft:
