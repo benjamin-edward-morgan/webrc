@@ -33,7 +33,7 @@ table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
 /* Top Menu Styles */
 
-#top-menu-container { background: #000; width: 100%; }
+#top-menu-container { background: #000; width: 100%; position: absolute; }
 
 #result1, #result2 { position: absolute; top: 0; margin-top: 10px; }
 
@@ -82,11 +82,11 @@ table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
 /* Controller Left */
 
-#controller-left { position: absolute; bottom: 0; left: 0; }
+#controller-left { position: absolute; bottom: 0; left: 10px; }
 
 /* Controller Right */ 
 
-#controller-right { position: absolute; bottom: 0; right: 0; }
+#controller-right { position: absolute; bottom: 0; right: 10px; }
 
 /* Phone Styles */
 
