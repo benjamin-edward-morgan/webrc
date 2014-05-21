@@ -1,20 +1,20 @@
 /* BEN & CHAD'S REMOTE CONTROL STYLES */
-
-/* CSS Mobile Reset */
 html, body
 {
  margin: 0;
  padding: 0; 
  border: 0;
-}
-
-body 
-{
+ background: url("ponce.jpg") center center no-repeat fixed;
+ -webkit-background-size: cover;
+ -moz-background-size: cover;
+ -o-background-size: cover;
+ background-size: cover;
+ width: 100%;
+ height: 100%;
  font-family:Arial,  sans-serif;
  line-height:1.5;
  font-size:16px;
- background: #fff;
- color: #000;s
+ color: #fff;
  word-wrap: break-word;
  -webkit-text-size-adjust: none;
 }
@@ -29,9 +29,46 @@ table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
 /* Custom Styles */
 
-body { background: #000; color: #fff; height: 100%; width: 100%;  }
-
 #container { width: 100%; height: 100%; min-height: 320px; min-width: 320px;  }
+
+/* Top Menu Styles */
+
+#top-menu-container { background: #000; width: 100%; }
+
+#result1, #result2 { position: absolute; top: 0; margin-top: 10px; }
+
+#result1 { right: 0; margin-right: 10px; }
+
+#result2 { left: 0; margin-left: 10px; }
+
+.hud { max-width: 600px; margin: 0 auto; height: 50px; }
+
+/* Wifi & Battery Styles */
+
+#wifi, #battery { width: 50px; height: 50px; position: relative; }
+
+#wifi { float: left; }
+
+#battery { float: right; }
+
+#wifi .label { position: absolute; top: 0; left: 0; color: #17ff2d; font-size: 10px; }
+
+#battery .label { position: absolute; top: 0; right: 0px; color: #ff0000; font-size: 10px; }
+
+#wifi .one, #wifi .two, #wifi .three, #wifi .four, #wifi .five { background: #17ff2d; display: inline-block; margin-top: 15px; }
+
+#battery .one, #battery .two, #battery .three, #battery .four, #battery .five { background: #ff0000; display: inline-block; margin-top: 15px; }
+
+#wifi .one, #battery .five { height: 5px; width: 5px; }
+
+#wifi .two, #battery .four { height: 10px; width: 5px; }
+
+#wifi .three, #battery .three { height: 15px; width: 5px; }
+
+#wifi .four, #battery .two { height: 20px; width: 5px; }
+
+#wifi .five, #battery .one { height: 25px; width: 5px; }
+
 
 /* Base Controller Styles */
 
@@ -47,34 +84,9 @@ body { background: #000; color: #fff; height: 100%; width: 100%;  }
 
 #controller-left { position: absolute; bottom: 0; left: 0; }
 
-#result1 { position: absolute; top:0; right: 0; }
-
 /* Controller Right */ 
 
 #controller-right { position: absolute; bottom: 0; right: 0; }
-
-#result2 { }
-
-/* The Box & Grid */
-
-#box { width: 100px; height: 100px; display: block; position: relative; margin: 0 auto; -webkit-border-radius: 30px; -moz-border-radius: 30px; border-radius: 50px; background: rgb(255,21,0); /* Old browsers */
-background: -moz-radial-gradient(center, ellipse cover,  rgba(255,21,0,1) 0%, rgba(155,3,3,1) 100%); /* FF3.6+ */
-background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,21,0,1)), color-stop(100%,rgba(155,3,3,1))); /* Chrome,Safari4+ */
-background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,21,0,1) 0%,rgba(155,3,3,1) 100%); /* Chrome10+,Safari5.1+ */
-background: -o-radial-gradient(center, ellipse cover,  rgba(255,21,0,1) 0%,rgba(155,3,3,1) 100%); /* Opera 12+ */
-background: -ms-radial-gradient(center, ellipse cover,  rgba(255,21,0,1) 0%,rgba(155,3,3,1) 100%); /* IE10+ */
-background: radial-gradient(ellipse at center,  rgba(255,21,0,1) 0%,rgba(155,3,3,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff1500', endColorstr='#9b0303',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
- }
-
-#grid {  -webkit-border-radius: 30px; -moz-border-radius: 30px; border-radius: 50px; z-index: -10; width: 200px; height: 200px; position: absolute; top: 0; left: 50%; background: rgb(174,188,191); /* Old browsers */
-background: -moz-radial-gradient(center, ellipse cover,  rgba(174,188,191,1) 0%, rgba(110,119,116,1) 50%, rgba(10,14,10,1) 51%, rgba(10,8,9,1) 100%); /* FF3.6+ */
-background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(174,188,191,1)), color-stop(50%,rgba(110,119,116,1)), color-stop(51%,rgba(10,14,10,1)), color-stop(100%,rgba(10,8,9,1))); /* Chrome,Safari4+ */
-background: -webkit-radial-gradient(center, ellipse cover,  rgba(174,188,191,1) 0%,rgba(110,119,116,1) 50%,rgba(10,14,10,1) 51%,rgba(10,8,9,1) 100%); /* Chrome10+,Safari5.1+ */
-background: -o-radial-gradient(center, ellipse cover,  rgba(174,188,191,1) 0%,rgba(110,119,116,1) 50%,rgba(10,14,10,1) 51%,rgba(10,8,9,1) 100%); /* Opera 12+ */
-background: -ms-radial-gradient(center, ellipse cover,  rgba(174,188,191,1) 0%,rgba(110,119,116,1) 50%,rgba(10,14,10,1) 51%,rgba(10,8,9,1) 100%); /* IE10+ */
-background: radial-gradient(ellipse at center,  rgba(174,188,191,1) 0%,rgba(110,119,116,1) 50%,rgba(10,14,10,1) 51%,rgba(10,8,9,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aebcbf', endColorstr='#0a0809',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */  }
 
 /* Phone Styles */
 
