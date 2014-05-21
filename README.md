@@ -92,6 +92,23 @@ i2c-dev
 * use `update-java-alternatives -l` to list available java vms
 * use `sudo update-java-alternatives -s jdk-7-oracle-armhf` to enable oracle java 7
 
+#####Install and run mjpg_streamer
+```
+sudo apt-get update
+sudo apt-get install libjpeg8-dev imagemagick libv4l-dev
+sudo ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
+wget http://sourceforge.net/code-snapshots/svn/m/mj/mjpg-streamer/code/mjpg-streamer-code-182.zip
+unzip mjpg-streamer-code-182.zip
+cd mjpg-streamer-code-182/mjpg-streamer
+make mjpg_streamer input_file.so output_http.so
+sudo cp mjpg_streamer /usr/local/bin
+sudo cp output_http.so input_file.so /usr/local/lib/
+mkdir /tmp/stream
+raspistill --nopreview -w 640 -h 480 -q 5 -o /tmp/stream/pic.jpg -tl 100 -t 9999999 -th 0:0:0 &sudo cp -R www /usr/local/www
+LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer -i "input_file.so -f /tmp/stream -n pic.jpg" -o "output_http.so -w /usr/local/www"
+```
+visit <ip address of pi>:8080/ to view stream and sample code
+
 #####Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status
 * `raspistill` and `raspivid` to take pictures and video, respectively
