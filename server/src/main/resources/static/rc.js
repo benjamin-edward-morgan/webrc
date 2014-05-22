@@ -161,7 +161,7 @@ $(document).ready(
 
 			// one on the left of the screen
 			var joystick_left = new VirtualJoystick({
-				container : document.body,
+				container : document.getElementById("container"),
 				strokeStyle : 'orange',
 				mouseSupport : true
 			});
@@ -196,7 +196,7 @@ $(document).ready(
 
 			// one on the right of the screen
 			var joystick_right = new VirtualJoystick({
-				container : document.body,
+				container : document.getElementById("container"),
 				strokeStyle : 'cyan',
 				mouseSupport : true
 			});
