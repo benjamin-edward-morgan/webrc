@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Websocket</title>
+</head>
+
+<script src = "/webjars/jquery/2.1.1/jquery.min.js"></script>
+<script src = "/webjars/cometd/2.3.1/cometd.js"></script>
+<script src = "/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>
+<script>
+
+
+$( document ).ready( function() {
+
+    console.log("page loaded")
+
+    var cometd = $.cometd
+
+    cometd.configure('http://localhost:8080/webrc/bayeux/')
+
+    cometd.handshake(function(handshakeReply) {
+
+            console.log("handshake reply")
+            alert("handshake reply")
+
+            if (handshakeReply.successful) {
+
+                console.log("handshake successful")
+                alert("handshake successful")
+
+            }
+    });
+
+    alert("page loaded");
+
+    cometd.subscribe("/data", function(message) { console.log(message) }, function(subscribeReply)
+    {
+        console.log("SUBSCRIBED1!!")
+        if (subscribeReply.successful == true) {
+            console.log("SUBSCRIBED!!!")
+        }
+
+    });
+
+    setInterval( function() {
+        cometd.publish("/data", { "message" : "fuck you" } )
+    }, 2000)
+
+})
+
+
+
+
+</script>
+
+<body>
+</body>
+</html>
