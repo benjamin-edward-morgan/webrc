@@ -1,56 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Websocket</title>
+<title>Websocket</title>
 </head>
 
-<script src = "/webjars/jquery/2.1.1/jquery.min.js"></script>
-<script src = "/webjars/cometd/2.3.1/cometd.js"></script>
-<script src = "/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>
+<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+<script src="/webjars/cometd/2.3.1/cometd.js"></script>
+<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>
 <script>
+	$(document).ready(function() {
 
+		console.log("page loaded");
 
-$( document ).ready( function() {
+		var cometd = $.cometd;
 
-    console.log("page loaded")
+		cometd.configure('http://localhost:8080/webrc/bayeux/');
 
-    var cometd = $.cometd
+		cometd.handshake(function(handshakeReply)
+		{
+			alert("hello");
+		    if (handshakeReply.successful)
+		    {
+		        // Publish to a channel
+		        cometd.publish('/data', { foo: 'bar' });
+		    }
+		});
+		
 
-    cometd.configure('http://localhost:8080/webrc/bayeux/')
+		alert("page loaded");
 
-    cometd.handshake(function(handshakeReply) {
+		cometd.subscribe("/data", function(message) {
+			console.log(message);
+		}, function(subscribeReply) {
+			alert("SUBSCRIBED1!!");
+			if (subscribeReply.successful == true) {
+				alert("SUBSCRIBED!!!");
+			}
 
-            console.log("handshake reply")
-            alert("handshake reply")
+		});
 
-            if (handshakeReply.successful) {
+		setInterval(function() {
+			cometd.publish("/data", {
+				"message" : "fuck you"
+			});
+		}, 2000);
 
-                console.log("handshake successful")
-                alert("handshake successful")
-
-            }
-    });
-
-    alert("page loaded");
-
-    cometd.subscribe("/data", function(message) { console.log(message) }, function(subscribeReply)
-    {
-        console.log("SUBSCRIBED1!!")
-        if (subscribeReply.successful == true) {
-            console.log("SUBSCRIBED!!!")
-        }
-
-    });
-
-    setInterval( function() {
-        cometd.publish("/data", { "message" : "fuck you" } )
-    }, 2000)
-
-})
-
-
-
-
+	});
 </script>
 
 <body>
