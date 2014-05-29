@@ -5,49 +5,114 @@
 </head>
 
 <script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+
+
+<!-- <script src="/webjars/cometd-jquery/2.3.1/jquery-1.6.2.js"></script> -->
+<script src="/webjars/cometd-jquery/2.3.1/json2.js"></script>
+
 <script src="/webjars/cometd/2.3.1/cometd.js"></script>
+
 <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>
+
+<!-- <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-reload.js"></script>
+<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-timestamp.js"></script>
+<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-ack.js"></script>
+<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-timesync.js"></script> -->
+
+
 <script>
-	$(document).ready(function() {
-
-		console.log("page loaded");
-
-		var cometd = $.cometd;
-
-		cometd.configure('http://localhost:8080/webrc/bayeux/');
-
-		cometd.handshake(function(handshakeReply)
+(function($)
 		{
-			alert("hello");
-		    if (handshakeReply.successful)
+		    var cometd = $.cometd;
+
+		    $(document).ready(function()
 		    {
-		        // Publish to a channel
-		        cometd.publish('/data', { foo: 'bar' });
-		    }
-		});
-		
+		        function _connectionEstablished()
+		        {
+		            $('#body').append('<div>CometD Connection Established</div>');
+		        }
 
-		alert("page loaded");
+		        function _connectionBroken()
+		        {
+		            $('#body').append('<div>CometD Connection Broken</div>');
+		        }
 
-		cometd.subscribe("/data", function(message) {
-			console.log(message);
-		}, function(subscribeReply) {
-			alert("SUBSCRIBED1!!");
-			if (subscribeReply.successful == true) {
-				alert("SUBSCRIBED!!!");
-			}
+		        function _connectionClosed()
+		        {
+		            $('#body').append('<div>CometD Connection Closed</div>');
+		        }
+		        
+		        function handlemessage()
+		        {
+					console.log("recieved :" + message);
+                    $('#body').append('<div>Server Says: ' + message.data.random + '</div>');
+	                cometd.publish('/data', { name: 'fuck you' });
+		        }
 
-		});
+		        // Function that manages the connection status with the Bayeux server
+		        var _connected = false;
+		        function _metaConnect(message)
+		        {
+		            if (cometd.isDisconnected())
+		            {
+		                _connected = false;
+		                _connectionClosed();
+		                return;
+		            }
 
-		setInterval(function() {
-			cometd.publish("/data", {
-				"message" : "fuck you"
-			});
-		}, 2000);
+		            var wasConnected = _connected;
+		            _connected = message.successful === true;
+		            if (!wasConnected && _connected)
+		            {
+		                _connectionEstablished();
+		            }
+		            else if (wasConnected && !_connected)
+		            {
+		                _connectionBroken();
+		            }
+		        }
 
-	});
+		        // Function invoked when first contacting the server and
+		        // when the server has lost the state of this client
+		        function _metaHandshake(handshake)
+		        {
+		        	console.log("handshake!!!");
+		            if (handshake.successful === true)
+		            {
+		            	console.log("successful");
+		                cometd.batch(function()
+		                {
+		                	console.log("subscribing....");
+		                    cometd.addListener('/data', handlemessage);
+		                    // Publish on a service channel since the message is for the server only
+		                    cometd.publish('/data', { name: 'fuck you' });
+		                });
+		            }
+		        }
+
+		        // Disconnect when the page unloads
+		        $(window).unload(function()
+		        {
+		            cometd.disconnect(true);
+		        });
+
+		        var cometURL = location.protocol + "//" + location.host + "/webrc/bayeux";
+		        console.log(cometURL);
+		        cometd.configure({
+		            url: cometURL
+		           
+		        });
+
+		        cometd.addListener('/meta/handshake', _metaHandshake);
+		        cometd.addListener('/meta/connect', _metaConnect);
+
+		        cometd.handshake();
+		    });
+		})(jQuery);
 </script>
 
 <body>
+    <div id="body"></div>
+
 </body>
 </html>
