@@ -4,20 +4,33 @@
 <title>Websocket</title>
 </head>
 
-<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+<!--<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>-->
 
 
 <!-- <script src="/webjars/cometd-jquery/2.3.1/jquery-1.6.2.js"></script> -->
-<script src="/webjars/cometd-jquery/2.3.1/json2.js"></script>
+<!--<script src="/webjars/cometd-jquery/2.3.1/json2.js"></script>-->
 
-<script src="/webjars/cometd/2.3.1/cometd.js"></script>
+<!--<script src="/webjars/cometd/2.3.1/cometd.js"></script>-->
 
-<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>
+<!--<script src="/webjars/cometd-jquery/2.3.1/jquery.cometd.js"></script>-->
 
 <!-- <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-reload.js"></script>
 <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-timestamp.js"></script>
 <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-ack.js"></script>
 <script src="/webjars/cometd-jquery/2.3.1/jquery.cometd-timesync.js"></script> -->
+
+<script src="jquery-1.11.0.js"></script>
+<script src="cometd-namespace.js"></script>
+<script src="cometd-json.js"></script>
+<script src="Transport.js"></script>
+<script src="TransportRegistry.js"></script>
+<script src="LongPollingTransport.js"></script>
+<script src="CallbackPollingTransport.js"></script>
+<script src="WebSocketTransport.js"></script>
+<script src="RequestTransport.js"></script>
+<script src="Utils.js"></script>
+<script src="Cometd.js"></script>
+<script src="jquery.cometd.js"></script>
 
 
 <script>
@@ -25,7 +38,10 @@
 		{
 		    var cometd = $.cometd;
 
-		    $(document).ready(function()
+            var subscription = null;
+
+
+            $(document).ready(function()
 		    {
 		        function _connectionEstablished()
 		        {
@@ -42,7 +58,7 @@
 		            $('#body').append('<div>CometD Connection Closed</div>');
 		        }
 		        
-		        function handlemessage()
+		        function _handlemessage(message)
 		        {
 					console.log("recieved :" + message);
                     $('#body').append('<div>Server Says: ' + message.data.random + '</div>');
@@ -80,13 +96,12 @@
 		            if (handshake.successful === true)
 		            {
 		            	console.log("successful");
-		                cometd.batch(function()
-		                {
-		                	console.log("subscribing....");
-		                    cometd.addListener('/data', handlemessage);
+
+		                console.log("subscribing....");
+		                subscription = cometd.subscribe('/service/data', _handlemessage);
 		                    // Publish on a service channel since the message is for the server only
-		                    cometd.publish('/data', { name: 'fuck you' });
-		                });
+		                cometd.publish('/service/data', { name: 'fuck you' });
+
 		            }
 		        }
 
@@ -99,14 +114,32 @@
 		        var cometURL = location.protocol + "//" + location.host + "/webrc/bayeux";
 		        console.log(cometURL);
 		        cometd.configure({
-		            url: cometURL
-		           
-		        });
+                    url: cometURL,
+                    logLevel: 'debug'
+                });
 
 		        cometd.addListener('/meta/handshake', _metaHandshake);
 		        cometd.addListener('/meta/connect', _metaConnect);
 
 		        cometd.handshake();
+//
+//                function(Reply) {
+//                    console.log("handshake reply" + Reply);
+//
+//                    if(Reply.successful === true) {
+//
+//                        console.log("subscribing....");
+//                        subscription = cometd.subscribe('/data', function(message)
+//                        {
+//                            console.log("recieved :" + message);
+//                            $('#body').append('<div>Server Says: ' + message.data.random + '</div>');
+//                            cometd.publish('/service/data', { name: 'fuck you' });
+//                        });
+//                        // Publish on a service channel since the message is for the server only
+//                        //cometd.publish('/service/data', { name: 'fuck you' });
+//
+//                    }
+//                }
 		    });
 		})(jQuery);
 </script>

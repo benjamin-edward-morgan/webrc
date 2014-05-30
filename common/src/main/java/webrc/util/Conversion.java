@@ -17,8 +17,12 @@ public class Conversion {
             return ((Double) o).floatValue();
         } else if (o instanceof Integer) {
             return ((Integer) o).floatValue();
+        } else if (o instanceof Long) {
+            return ((Long) o).floatValue();
+        } else if (o instanceof String) {
+            return Float.parseFloat(o.toString());
         } else {
-            throw new RuntimeException("expected float, double or integer but recieved: " + o);
+            throw new RuntimeException("expected float, double or integer but recieved: " + o + "(" + o.getClass() + ")");
         }
     }
 }

@@ -1,6 +1,7 @@
 package webrc.messaging;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import webrc.WebRcLog;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Pubscriber {
+
+    protected WebRcLog log = WebRcLog.getLog(this);
 
     @Autowired
     protected

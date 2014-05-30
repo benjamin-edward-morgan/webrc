@@ -26,6 +26,10 @@ $(document).ready(
 			
 			var joystickUpdateTime = 100;
 
+            var cometd = $.cometd;
+
+            var subscription = null;
+
 			$("#camera-options").click(function(){
 				$("#camera-options-menu").toggle();
 			});
@@ -146,17 +150,9 @@ $(document).ready(
 					dat['pan'] = camX_0;
 					dat['tilt'] = camY_0;
 
-					$.ajax({
-						type : "POST",
-						headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-						url : "/webrc",
-                        dataType : "application/json",
-						data : JSON.stringify(dat)
-					});
-				}
+                    cometd.publish('/service/data', dat);
+
+                }
 			}
 
 			// one on the left of the screen
@@ -228,6 +224,82 @@ $(document).ready(
 			 }
 
 			}, joystickUpdateTime);
-			
+
+
+                function _connectionEstablished()
+                {
+                    console.log("connection established");
+                }
+
+                function _connectionBroken()
+                {
+                    console.log("connection broken");
+                }
+
+                function _connectionClosed()
+                {
+                    console.log("connection closed");
+                }
+
+                function _handlemessage(message)
+                {
+                    console.log("recieved :" + message);
+                }
+
+                // Function that manages the connection status with the Bayeux server
+                var _connected = false;
+                function _metaConnect(message)
+                {
+                    if (cometd.isDisconnected())
+                    {
+                        _connected = false;
+                        _connectionClosed();
+                        return;
+                    }
+
+                    var wasConnected = _connected;
+                    _connected = message.successful === true;
+                    if (!wasConnected && _connected)
+                    {
+                        _connectionEstablished();
+                    }
+                    else if (wasConnected && !_connected)
+                    {
+                        _connectionBroken();
+                    }
+                }
+
+                // Function invoked when first contacting the server and
+                // when the server has lost the state of this client
+                function _metaHandshake(handshake)
+                {
+                    console.log("handshake!!!");
+                    if (handshake.successful === true)
+                    {
+                        console.log("successful");
+
+                        console.log("subscribing....");
+                        subscription = cometd.subscribe('/service/data', _handlemessage);
+                    }
+                }
+
+                // Disconnect when the page unloads
+                $(window).unload(function()
+                {
+                    cometd.disconnect(true);
+                });
+
+                var cometURL = location.protocol + "//" + location.host + "/webrc/bayeux";
+                console.log(cometURL);
+                cometd.configure({
+                    url: cometURL,
+                    logLevel: 'debug'
+                });
+
+                cometd.addListener('/meta/handshake', _metaHandshake);
+                cometd.addListener('/meta/connect', _metaConnect);
+
+                cometd.handshake();
+
 
 		});
