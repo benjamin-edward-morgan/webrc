@@ -49,7 +49,7 @@ public class I2C {
 
             sb.append((hex.length() < 2 ? "0" : "") + Integer.toHexString(b & 0xff) + " ");
         }
-        //log.log(dev.toString() + " writing raw bytes:\n" + sb.toString());
+        log.log(dev.toString() + " writing raw bytes:\n" + sb.toString());
 
         if (!robotProperties.isTestMode()) {
             try {
@@ -70,6 +70,8 @@ public class I2C {
 
             sb.append((hex.length() < 2 ? "0" : "") + Integer.toHexString(b & 0xff) + " ");
         }
+
+        log.log(dev.toString() + " writing " + sb.toString() + " to " + register);
 
         if (!robotProperties.isTestMode()) {
             try {

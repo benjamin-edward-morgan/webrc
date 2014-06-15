@@ -103,7 +103,7 @@ public class EmbeddedServer extends Pubscriber{
             }
         });
 
-        server.join();
+        //server.join();
 
     }
 

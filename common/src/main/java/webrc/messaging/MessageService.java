@@ -1,5 +1,6 @@
 package webrc.messaging;
 
+import webrc.WebRcLog;
 import webrc.util.ManyToManyMap;
 
 import java.util.Map;
@@ -14,15 +15,23 @@ import java.util.Set;
  */
 public class MessageService {
 
+    WebRcLog log = WebRcLog.getLog(this);
+
     ManyToManyMap<String, Pubscriber> keySubscribers = new ManyToManyMap<String, Pubscriber>();
 
     public MessageService() {
     }
 
     public void publish(Map<String, Object> values) {
+
+        log.log("publish: " + values);
+
         Set<Pubscriber> subscribers = keySubscribers.getBforA(values.keySet());
         for (Pubscriber subscriber : subscribers) {
             //TODO: only notify the subscriber about what it has subscribed to
+
+            log.log("notifying: " + subscriber + " : " + values);
+
             subscriber.notify(values);
         }
     }
