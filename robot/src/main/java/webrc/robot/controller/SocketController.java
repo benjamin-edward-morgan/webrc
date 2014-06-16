@@ -1,12 +1,10 @@
 package webrc.robot.controller;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.JsonGenerator;
 
-import webrc.WebRcLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -18,7 +16,7 @@ import java.util.Map;
 
 class SocketController extends Controller {
 
-    WebRcLog log = WebRcLog.getLog(this);
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     String host;
     int port;
@@ -55,30 +53,30 @@ class SocketController extends Controller {
 
                             if(rootNode != null) {
 
-                                log.log("recieved:" + rootNode.toString());
+                                log.trace("recieved:" + rootNode.toString());
 
                                 if (s.isClosed() || rootNode == null) {
-                                    log.log("socket closed");
+                                    log.warn("socket closed");
                                     break;
 
                                 }
 
                                 publish(rootNode);
                             }      else {
-                                log.log("**VALUES WAS NULL**");
+                                log.warn("**VALUES WAS NULL**");
                             }
 
                         }
 
                     } catch (UnknownHostException e) {
-                        log.log(e);
+                        log.error("could not connect to server", e);
 
                     } catch (IOException e) {
-                        log.log(e);
+                        log.error("error connecting to server", e);
 
                     }
 
-                    log.log("attemptng reconnection in 10 seconds...");
+                    log.info("attemptng reconnection in 10 seconds...");
                     sleep(10000);
 
 

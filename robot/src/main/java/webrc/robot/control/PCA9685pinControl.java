@@ -1,8 +1,8 @@
 package webrc.robot.control;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import webrc.robot.util.Conversion;
 import webrc.robot.util.I2C;
-import webrc.util.Conversion;
 
 import javax.annotation.PostConstruct;
 
@@ -20,7 +20,7 @@ public class PCA9685pinControl extends Control {
 
     @PostConstruct
     public void init() {
-        log.log("created pin controller for pwm pin " + pin);
+        log.info("created pin controller for pwm pin " + pin);
     }
 
     /**
@@ -29,17 +29,20 @@ public class PCA9685pinControl extends Control {
     @Override
     public void set(String key, Object value) {
 
-        log.log("SET " + key + ":" + value);
-        set(Conversion.toFloat(value));
+        key+=".PCA9685pinControl";
+        set(key, Conversion.toFloat(value));
     }
 
-    private void set(Float value) {
+    private void set(String key, Float value) {
+
         if (value < 0)
             value = 0.0f;
         if (value > 1)
             value = 1.0f;
 
         int intVal = (int) (value * 4095);
+
+        blackbox.info(key+",{}", intVal);
 
         byte[] onbytes = new byte[]{(byte) (intVal & 0xff), (byte) ((intVal >> 8) & 0xff)};
         byte[] offbytes = new byte[]{0x0, 0x0};

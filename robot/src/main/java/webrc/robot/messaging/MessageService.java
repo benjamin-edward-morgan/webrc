@@ -1,7 +1,8 @@
-package webrc.messaging;
+package webrc.robot.messaging;
 
-import webrc.WebRcLog;
-import webrc.util.ManyToManyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webrc.robot.util.ManyToManyMap;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
  */
 public class MessageService {
 
-    WebRcLog log = WebRcLog.getLog(this);
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     ManyToManyMap<String, Pubscriber> keySubscribers = new ManyToManyMap<String, Pubscriber>();
 
@@ -24,13 +25,11 @@ public class MessageService {
 
     public void publish(Map<String, Object> values) {
 
-        log.log("publish: " + values);
-
         Set<Pubscriber> subscribers = keySubscribers.getBforA(values.keySet());
         for (Pubscriber subscriber : subscribers) {
             //TODO: only notify the subscriber about what it has subscribed to
 
-            log.log("notifying: " + subscriber + " : " + values);
+            log.debug("notifying: " + subscriber + " : " + values);
 
             subscriber.notify(values);
         }

@@ -1,4 +1,4 @@
-package webrc.util;
+package webrc.robot.util;
 
 /**
  * Created with IntelliJ IDEA.

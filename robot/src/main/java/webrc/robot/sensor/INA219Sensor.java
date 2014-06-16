@@ -69,8 +69,6 @@ public class INA219Sensor extends Sensor{
 
     @PostConstruct
     public void init() {
-        log.log("Created PCA control!!");
-
         if (!robotProperties.isTestMode()) {
             I2CBus i2cBus = i2c.geti2cBus(bus);
             if (i2c != null) {
@@ -85,7 +83,7 @@ public class INA219Sensor extends Sensor{
                     dev.write(CALIBRATION, cal, 0, 2);
 
                 } catch (IOException e) {
-                    log.log(e);
+                    log.error("error writing to i2c bus", e);
                 }
 
 
@@ -121,8 +119,8 @@ public class INA219Sensor extends Sensor{
 
                             //TODO: notify
 
-                            log.log(key + " shunt: " + shuntVoltage*shuntLSB + "V (" + Integer.toHexString(shuntVoltage) + ")");
-                            log.log(key + " bus: " + (busVoltage>>3)*busLSB + "V (" + Integer.toHexString(busVoltage) + ")");
+                            log.info(key + " shunt: " + shuntVoltage*shuntLSB + "V (" + Integer.toHexString(shuntVoltage) + ")");
+                            log.info(key + " bus: " + (busVoltage>>3)*busLSB + "V (" + Integer.toHexString(busVoltage) + ")");
 //                            log.log(key + " power: " + power*powerLSB + "W (" + Long.toHexString(power) + ")");
 //                            log.log(key + " current: " + current*currentLSB + "A (" + Long.toHexString(current) + ")");
 
@@ -139,7 +137,7 @@ public class INA219Sensor extends Sensor{
 
 
                         } catch (IOException e) {
-                            log.log(e);
+                            log.error("error reading from current sensor", e);
                         }
 
                     }

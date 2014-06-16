@@ -1,6 +1,6 @@
 package webrc.robot.control;
 
-import webrc.util.Conversion;
+import webrc.robot.util.Conversion;
 
 /**
  * Applies a 1D linear transform mapping
@@ -27,7 +27,7 @@ public class LinearTransformControl extends Control {
         this.outputMax = outputMax;
         this.innerController = innerController;
 
-        log.log("created linear transform around: " + innerController);
+        log.trace("created linear transform around: " + innerController);
     }
 
     public float transform(float value) {
@@ -43,12 +43,14 @@ public class LinearTransformControl extends Control {
 
     @Override
     public void set(String key, Object value) {
+        key += ".linearTransform";
         set(key, Conversion.toFloat(value));
     }
 
     private void set(String key, Float value) {
 
         value = transform(value);
+        blackbox.info(key+",{}", value);
         innerController.set(key, value);
     }
 

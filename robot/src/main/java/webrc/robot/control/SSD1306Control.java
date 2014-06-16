@@ -159,8 +159,7 @@ public class SSD1306Control extends Control {
                 //i2c.writeBytes(dev, new byte[]{(byte)0x00, (byte)0xA5});
 
             } catch (IOException e) {
-                log.log("Error: could not get device " + device + " from bus " + bus);
-                log.log(e);
+                log.error("Error: could not get device " + device + " from bus " + bus, e);
             }
         }
     }
@@ -177,12 +176,14 @@ public class SSD1306Control extends Control {
             }
         }
 
-        //TODO: don't write the whole goddamn screen if you don't have to.
-        byte[] data = new byte[pixels.length + 1];
-        data[0] = 0x40;
-        for (int i = 0; i < pixels.length; i++)
-            data[i + 1] = pixels[i];
-        i2c.writeBytes(dev, data);
+        if(!robotProperties.isTestMode()) {
+            //TODO: don't write the whole goddamn screen if you don't have to.
+            byte[] data = new byte[pixels.length + 1];
+            data[0] = 0x40;
+            for (int i = 0; i < pixels.length; i++)
+                data[i + 1] = pixels[i];
+            i2c.writeBytes(dev, data);
+        }
     }
 
     public byte mask(byte original, byte overlay) {
@@ -237,7 +238,7 @@ public class SSD1306Control extends Control {
             ImageOverlay overlay = (ImageOverlay) value;
             blitImage(overlay.image, overlay.x, overlay.y);
         } else {
-            log.log("expected ImageOverlay but got " + value.getClass());
+            log.error("expected ImageOverlay but got " + value.getClass());
         }
 
     }

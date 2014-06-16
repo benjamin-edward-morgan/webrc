@@ -1,6 +1,6 @@
 package webrc.robot.controller;
 
-import webrc.messaging.Pubscriber;
+import webrc.robot.messaging.Pubscriber;
 import webrc.robot.domain.ImageOverlay;
 import webrc.robot.util.FontRasters;
 

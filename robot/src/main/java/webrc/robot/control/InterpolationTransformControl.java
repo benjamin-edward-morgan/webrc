@@ -1,6 +1,6 @@
 package webrc.robot.control;
 
-import webrc.util.Conversion;
+import webrc.robot.util.Conversion;
 
 /**
  * @author benjaminmorgan
@@ -48,13 +48,13 @@ public class InterpolationTransformControl extends Control {
         this.innerController = innerController;
     }
 
-    public void begin() {
+    public void begin(String key) {
 
         if(interpolationThread != null && runner != null) {
             runner.kill();
         }
 
-        runner = new InterpolationRunner();
+        runner = new InterpolationRunner(key+".interpolationTransform");
         interpolationThread = new Thread(runner);
 
         interpolationThread.setDaemon(true);
@@ -66,6 +66,11 @@ public class InterpolationTransformControl extends Control {
     private class InterpolationRunner implements Runnable {
 
         boolean kill = false;
+        String key;
+
+        public InterpolationRunner(String key) {
+            this.key=key;
+        }
 
         public void kill() {
             kill=true;
@@ -96,16 +101,16 @@ public class InterpolationTransformControl extends Control {
                     x=goal;
                     v=0;
 
-                    System.out.println(x + "," + v);
-                    setInner(null, x);
+//                    System.out.println(x + "," + v);
+                    setInner(key, x);
                     break;
 
                 } else {
                     //move based on current velocity
                     x+=dx;
 
-                    System.out.println(x + "," + v);
-                    setInner(null, x);
+//                    System.out.println(x + "," + v);
+                    setInner(key, x);
                 }
 
                 //accelerate/decelerate
@@ -152,10 +157,11 @@ public class InterpolationTransformControl extends Control {
     public void set(String key, Object value) {
         Float val = Conversion.toFloat(value);
         goal=val;
-        begin();
+        begin(key);
     }
 
     private void setInner(String key, Object value) {
+        blackbox.info(key+",{}", value);
         innerController.set(key, value);
     }
 

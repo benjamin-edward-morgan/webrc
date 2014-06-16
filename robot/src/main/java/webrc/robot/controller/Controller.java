@@ -1,6 +1,6 @@
 package webrc.robot.controller;
 
-import webrc.messaging.Pubscriber;
+import webrc.robot.messaging.Pubscriber;
 
 import java.util.Map;
 

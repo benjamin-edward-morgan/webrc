@@ -159,7 +159,7 @@
 
     <!--Brokers messages between publishers and subscribers-->
 
-    <bean id="messageService" class="webrc.messaging.MessageService">
+    <bean id="messageService" class="webrc.robot.messaging.MessageService">
     </bean>
 
     <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>

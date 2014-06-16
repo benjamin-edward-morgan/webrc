@@ -73,7 +73,6 @@ public class PCA9685Control extends Control {
 
     @PostConstruct
     public void init() {
-        log.log("Created PCA control!!");
 
         if (!robotProperties.isTestMode()) {
             I2CBus i2cBus = i2c.geti2cBus(bus);
@@ -102,8 +101,7 @@ public class PCA9685Control extends Control {
                     }));
 
                 } catch (IOException e) {
-                    log.log("Error: could not get device " + device + " from bus " + bus);
-                    log.log(e);
+                    log.error("Error: could not get device " + device + " from bus " + bus, e);
                 }
             }
         }

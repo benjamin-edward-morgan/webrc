@@ -1,10 +1,12 @@
 package webrc.robot.control;
 
-import webrc.WebRcLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Control {
 
-    WebRcLog log = WebRcLog.getLog(this);
+    Logger log = LoggerFactory.getLogger(this.getClass());
+    Logger blackbox = LoggerFactory.getLogger("blackbox");
 
     /**
      * changes some value (a motor or something)

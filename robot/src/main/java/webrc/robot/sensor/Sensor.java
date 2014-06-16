@@ -1,7 +1,8 @@
 package webrc.robot.sensor;
 
-import webrc.WebRcLog;
-import webrc.messaging.Pubscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webrc.robot.messaging.Pubscriber;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class Sensor extends Pubscriber {
 
-    WebRcLog log = WebRcLog.getLog(this);
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     protected void notify(Map<String, Object> values) {

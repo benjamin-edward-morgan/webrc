@@ -9,7 +9,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
-import webrc.messaging.Pubscriber;
+import webrc.robot.messaging.Pubscriber;
 
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
@@ -94,7 +94,7 @@ public class EmbeddedServer extends Pubscriber{
             @Override
             public boolean onMessage(ServerSession serverSession, ServerChannel serverChannel, ServerMessage.Mutable mutable) {
 
-                log.log("Received: " + mutable.getData() + " on channel " + serverChannel.getId());
+                log.trace("Received: " + mutable.getData() + " on channel " + serverChannel.getId());
 
                 publish(mutable.getDataAsMap());
 

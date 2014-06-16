@@ -3,9 +3,10 @@ package webrc.robot.util;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import webrc.WebRcLog;
 import webrc.robot.RobotProperties;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Service
 public class I2C {
 
-    WebRcLog log = WebRcLog.getLog(I2C.class);
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     Map<Integer, I2CBus> busses = new HashMap<Integer, I2CBus>();
 
@@ -34,8 +35,7 @@ public class I2C {
             busses.put(busId, bus);
             return bus;
         } catch (IOException e) {
-            log.log("Error getting I2C bus: " + busId);
-            log.log(e);
+            log.error("Error getting I2C bus: " + busId, e);
         }
         return null;
     }
@@ -49,14 +49,13 @@ public class I2C {
 
             sb.append((hex.length() < 2 ? "0" : "") + Integer.toHexString(b & 0xff) + " ");
         }
-        log.log(dev.toString() + " writing raw bytes:\n" + sb.toString());
+//        log.debug(dev.toString() + " writing raw bytes:\n" + sb.toString());
 
         if (!robotProperties.isTestMode()) {
             try {
                 dev.write(bytes, 0, bytes.length);
             } catch (IOException e) {
-                log.log("Error writing to I2C Device");
-                log.log(e);
+                log.error("Error writing to I2C Device", e);
             }
         }
     }
@@ -71,14 +70,13 @@ public class I2C {
             sb.append((hex.length() < 2 ? "0" : "") + Integer.toHexString(b & 0xff) + " ");
         }
 
-        log.log(dev.toString() + " writing " + sb.toString() + " to " + register);
+//        log.debug("writing " + sb.toString() + " to " + register);
 
         if (!robotProperties.isTestMode()) {
             try {
                 dev.write(register, bytes, 0, bytes.length);
             } catch (IOException e) {
-                log.log("Error writing to I2C Device");
-                log.log(e);
+                log.error("Error writing to I2C Device", e);
             }
         }
     }

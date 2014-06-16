@@ -1,7 +1,8 @@
-package webrc.messaging;
+package webrc.robot.messaging;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import webrc.WebRcLog;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import java.util.Set;
  */
 public abstract class Pubscriber {
 
-    protected WebRcLog log = WebRcLog.getLog(this);
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     protected
