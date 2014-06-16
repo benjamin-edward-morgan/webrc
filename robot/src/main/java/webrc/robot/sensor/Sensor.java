@@ -16,6 +16,7 @@ import java.util.Map;
 public class Sensor extends Pubscriber {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
+    Logger blackbox = LoggerFactory.getLogger("blackbox");
 
     @Override
     protected void notify(Map<String, Object> values) {

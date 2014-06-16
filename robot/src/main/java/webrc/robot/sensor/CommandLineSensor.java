@@ -1,8 +1,5 @@
 package webrc.robot.sensor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +22,6 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class CommandLineSensor extends Sensor {
-
-    Logger blackbox = LoggerFactory.getLogger("blackbox");
 
     private String command;
     private Map<String, String> regexs;
@@ -66,6 +61,10 @@ public class CommandLineSensor extends Sensor {
                         log.error("error reading from command line", e);
                     }
                     Map<String, Object> values = parseRegexs(builder.toString());
+
+                    for(String key : values.keySet()) {
+                        blackbox.info(key+",{}", values.get(key));
+                    }
 
                     //publish readings
                     publish(values);

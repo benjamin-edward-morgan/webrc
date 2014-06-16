@@ -117,8 +117,6 @@ public class INA219Sensor extends Sensor{
                             dev.read(CURRENT, bytes, 0, 2);
                             long current = ((bytes[0]<<8)&0xff00) | (bytes[1]&0xff);
 
-                            //TODO: notify
-
                             log.info(key + " shunt: " + shuntVoltage*shuntLSB + "V (" + Integer.toHexString(shuntVoltage) + ")");
                             log.info(key + " bus: " + (busVoltage>>3)*busLSB + "V (" + Integer.toHexString(busVoltage) + ")");
 //                            log.log(key + " power: " + power*powerLSB + "W (" + Long.toHexString(power) + ")");
@@ -130,11 +128,13 @@ public class INA219Sensor extends Sensor{
 
 
                             Map<String, Object> values = new HashMap<String, Object>();
-                            values.put(key+".voltage", v + "(V)");
-                            values.put(key+".current", c + "(A)");
-                            values.put(key+".power", p + "(W)");
+                            values.put(key+".voltage", v);
+                            values.put(key+".current", c);
+                            values.put(key+".power", p);
 
-
+                            for(String key : values.keySet()) {
+                                blackbox.info(key+",{}", values.get(key));
+                            }
 
                         } catch (IOException e) {
                             log.error("error reading from current sensor", e);
