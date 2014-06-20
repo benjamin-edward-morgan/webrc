@@ -23,7 +23,7 @@ public class InterpolationTransformControl extends Control {
     private float x = 0.0f; //position
     private float v = 0.0f; //velocity
 
-    Control innerController = null;
+    Control innerControl = null;
 
     Thread interpolationThread = null;
     InterpolationRunner runner = null;
@@ -44,8 +44,8 @@ public class InterpolationTransformControl extends Control {
         this.updatePeriod = updatePeriod;
     }
 
-    public void setInnerController(Control innerController) {
-        this.innerController = innerController;
+    public void setInnerControl(Control innerControl) {
+        this.innerControl = innerControl;
     }
 
     public void begin(String key) {
@@ -148,7 +148,6 @@ public class InterpolationTransformControl extends Control {
                 } catch (InterruptedException e) {
                     //ok
                 }
-
             }
         }
     }
@@ -162,7 +161,7 @@ public class InterpolationTransformControl extends Control {
 
     private void setInner(String key, Object value) {
         blackbox.info(key+",{}", value);
-        innerController.set(key, value);
+        innerControl.set(key, value);
     }
 
     //number of seconds in 1 frame

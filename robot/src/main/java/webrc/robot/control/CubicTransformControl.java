@@ -26,8 +26,6 @@ public class CubicTransformControl extends Control {
         this.innerControl = innerControl;
     }
 
-
-
     @Override
     public void set(String key, Object value) {
         key += ".cubicTransform";

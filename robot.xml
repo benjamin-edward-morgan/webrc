@@ -75,21 +75,17 @@
     </bean>
 
     <!--PWM Controller Board-->
-
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
         <property name="device" value="0x40"/>
         <property name="prescale" value="30"/>
     </bean>
 
-
     <!--Pan Servo-->
-
     <bean id="panPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="15"/>
     </bean>
-
     <bean id="panLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
@@ -97,10 +93,11 @@
         <constructor-arg index="3" value="1"/>
         <constructor-arg index="4" ref="panPwmControl"/>
     </bean>
-
+    <bean id="panInterpolationTransformControl" class="webrc.robot.control.InterpolationTransformControl">
+        <property name="innerControl" ref="panLinearTransformControl"/>
+    </bean>
 
     <!--Tilt Servo-->
-
     <bean id="tiltPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="14"/>
@@ -112,9 +109,11 @@
         <constructor-arg index="3" value="1"/>
         <constructor-arg index="4" ref="tiltPwmControl"/>
     </bean>
+    <bean id="tiltInterpolationTransformControl" class="webrc.robot.control.InterpolationTransformControl">
+        <property name="innerControl" ref="tiltLinearTransformControl"/>
+    </bean>
 
     <!--Steering Servo-->
-
     <bean id="steeringPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="13"/>
@@ -126,9 +125,12 @@
         <constructor-arg index="3" value="0.5"/>
         <constructor-arg index="4" ref="steeringPwmControl"/>
     </bean>
+    <bean id="steeringCubicTransformControl" class="webrc.robot.control.CubicTransformControl">
+        <property name="maxValue" value="100"/>
+        <property name="innerControl" ref="steeringLinearTransformControl"/>
+    </bean>
 
     <!--Speed Servo-->
-
     <bean id="speedPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="0"/>
@@ -140,6 +142,10 @@
         <constructor-arg index="3" value="0.4"/>
         <constructor-arg index="4" ref="speedPwmControl"/>
     </bean>
+    <bean id="speedCubicTransformControl" class="webrc.robot.control.CubicTransformControl">
+        <property name="maxValue" value="100"/>
+        <property name="innerControl" ref="speedLinearTransformControl"/>
+    </bean>
 
 
     <!--all top-level controls mapped to names-->
@@ -147,24 +153,24 @@
     <bean id="controls" class="webrc.robot.control.Controls">
         <property name="controls">
             <map>
-                <entry key="pan" value-ref="panLinearTransformControl" />
-                <entry key="tilt" value-ref="tiltLinearTransformControl" />
-                <entry key="steering" value-ref="steeringLinearTransformControl" />
-                <entry key="speed" value-ref="speedLinearTransformControl" />
+                <entry key="pan" value-ref="panInterpolationTransformControl" />
+                <entry key="tilt" value-ref="tiltInterpolationTransformControl" />
+                <entry key="steering" value-ref="steeringCubicTransformControl" />
+                <entry key="speed" value-ref="speedCubicTransformControl" />
                 <entry key="screen" value-ref="screen"/>
             </map>
         </property>
     </bean>
 
-
     <!--Brokers messages between publishers and subscribers-->
-
     <bean id="messageService" class="webrc.robot.messaging.MessageService">
     </bean>
 
     <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
 
     <bean id="server" class = "webrc.server.EmbeddedServer"/>
+
+    <bean id="testui" class="webrc.test.TestUI"/>
 
 
 </beans>
