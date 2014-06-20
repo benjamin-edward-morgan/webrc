@@ -33,6 +33,8 @@ public class CubicTransformControl extends Control {
 
         //transform
         floatVal = (float)(Math.pow(floatVal, 3.0)/Math.pow(maxValue, 2));
+        if(floatVal > maxValue) floatVal = maxValue;
+        else if(floatVal < -maxValue) floatVal = -maxValue;
         blackbox.info(key+",{}", floatVal);
 
         innerControl.set(key, floatVal);

@@ -14,7 +14,65 @@
         <property name="testMode" value="true"/>
     </bean>
 
+    <!-- sensors -->
+
+    <bean id="powerSensor" class="webrc.robot.sensor.INA219Sensor">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x41"/>
+        <property name="key" value="battery"/>
+    </bean>
+
+
+    <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="ifconfig"/>
+        <property name="regexs">
+            <map>
+                <!--mac-->
+                <entry key="ip" value="en1:.*inet (\d+\.\d+\.\d+\.\d+)"/>
+                <entry key="rx" value="en1:.*media: ([a-z]+)"/>
+                <entry key="tx" value="en1:.*status: ([a-z]+)"/>
+
+
+                <!--raspberry-->
+                <!--<entry key="ip" value="wlan0.*inet addr:(\d+\.\d+\.\d+\.\d+)"/>-->
+                <!--<entry key="tx" value="wlan0.*RX packets:(\d+)"/>-->
+                <!--<entry key="rx" value="wlan0.*TX packets:(\d+)"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <!--raspberry only-->
+    <!--<bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">-->
+        <!--<property name="command" value="iwconfig"/>-->
+        <!--<property name="regexs">-->
+            <!--<map>-->
+                <!--&lt;!&ndash;raspberry&ndash;&gt;-->
+                <!--<entry key="ssid" value="wlan0.*ESSID:&quot;([^&quot;]*)&quot;"/>-->
+                <!--<entry key="bitrate" value="wlan0.*Bit Rate:(\d+\.\d+ [KMG]b/s)"/>-->
+                <!--<entry key="linkQuality" value="wlan0.*Link Quality=(\d+/\d+)"/>-->
+                <!--<entry key="signal" value="wlan0.*Signal level=(\d+/\d+)"/>-->
+                <!--<entry key="noise" value="wlan0.*Noise level=(\d+/\d+)"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--controllers are both publishers and subscribers-->
+    <!--<bean id="socketController" class="webrc.robot.controller.SocketController">-->
+        <!--<property name="host" value="localhost"/>-->
+        <!--<property name="port" value="8081"/>-->
+    <!--</bean>-->
+
+    <bean id="screenController" class="webrc.robot.controller.ScreenController">
+    </bean>
+
     <bean id="i2c" class="webrc.robot.util.I2C"/>
+
+    <!--screen-->
+    <bean id="screen" class="webrc.robot.control.SSD1306Control">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x3D"/>
+        <property name="resetPin" value="1"/>
+    </bean>
 
     <!--PWM Controller Board-->
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
@@ -99,6 +157,7 @@
                 <entry key="tilt" value-ref="tiltInterpolationTransformControl" />
                 <entry key="steering" value-ref="steeringCubicTransformControl" />
                 <entry key="speed" value-ref="speedCubicTransformControl" />
+                <entry key="screen" value-ref="screen"/>
             </map>
         </property>
     </bean>

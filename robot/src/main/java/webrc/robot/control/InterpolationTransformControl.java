@@ -16,6 +16,8 @@ public class InterpolationTransformControl extends Control {
     //properties (strictly positive)
     private float maxVelocity = 75.0f; //in units/sec
     private float maxAcceleration = 150f; //in units/(sec^2)
+    private float maxValue = 100;
+    private float minValue = -100;
     private int updatePeriod = 100; //ms
 
     //state variables
@@ -42,6 +44,14 @@ public class InterpolationTransformControl extends Control {
 
     public void setUpdatePeriod(int updatePeriod) {
         this.updatePeriod = updatePeriod;
+    }
+
+    public void setMaxValue(float maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public void setMinValue(float minValue) {
+        this.minValue = minValue;
     }
 
     public void setInnerControl(Control innerControl) {
@@ -155,6 +165,8 @@ public class InterpolationTransformControl extends Control {
     @Override
     public void set(String key, Object value) {
         Float val = Conversion.toFloat(value);
+        if(val > maxValue) val = maxValue;
+        else if(val < minValue) val=minValue;
         goal=val;
         begin(key);
     }
