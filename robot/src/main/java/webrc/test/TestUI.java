@@ -12,8 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -31,8 +30,7 @@ import java.util.Scanner;
 public class TestUI extends Pubscriber {
 
     Logger log = LoggerFactory.getLogger(TestUI.class);
-    ch.qos.logback.classic.Logger blackbox = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("blackbox");
-
+    ch.qos.logback.classic.Logger blackbox = null;
     //1 tab for each ChartPanel
     JTabbedPane tabs = new JTabbedPane();
 
@@ -40,16 +38,45 @@ public class TestUI extends Pubscriber {
     Map<String, ChartPanel> charts = new HashMap<>();
 
 
-    @Override
-    protected void notify(Map<String, Object> values) {
-        //TODO: add ui for manipulating sensor values
+    /**Run to replay a log file
+     *
+     * @param args -filename
+     */
+    public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(TestUI.class);
+
+        if(args.length != 1) {
+            logger.error("Please provide a filename.");
+            return;
+        }
+
+        TestUI testUI = new TestUI();
+
+        try {
+            testUI.initFile(args[0]);
+            testUI.constructFrame();
+        } catch (Exception e) {
+            logger.error("Error!", e);
+        }
+
+
     }
 
-    //create a hook into blackbox log, and chart out values
-    //that parse as numbers
+
+    @Override
+    protected void notify(Map<String, Object> values) {
+        //TODO: add ui for manipulating sensor values in debug mode
+    }
+
+    /**
+     * begin reading from the Logback blackbox logger
+     * this is intended for real-time graphing when debugging
+     * @throws Exception
+     */
     private void initBlackboxAppender() throws Exception {
 
-        /**Hook into the 'blackbox' log appender**/
+        blackbox = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("blackbox");
+
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder patternLayout = new PatternLayoutEncoder();
 
@@ -57,7 +84,7 @@ public class TestUI extends Pubscriber {
         patternLayout.setContext(loggerContext);
         patternLayout.start();
 
-        final PipedInputStream inputStream = new PipedInputStream();
+        PipedInputStream inputStream = new PipedInputStream();
         PipedOutputStream outputStream = new PipedOutputStream(inputStream);
 
         OutputStreamAppender<ILoggingEvent> appender = new OutputStreamAppender<ILoggingEvent>();
@@ -68,6 +95,77 @@ public class TestUI extends Pubscriber {
 
         blackbox.addAppender(appender);
 
+        begin(inputStream);
+    }
+
+    /**
+     * begin reading from a log file,
+     * send data with appropriate time delay
+     * to the graphing thread
+     * this is mean for graphing from a log file
+     * after-the-fact
+     * @throws Exception
+     */
+    private void initFile(String filename) throws Exception {
+        final Scanner fileScanner = new Scanner(new FileInputStream(new File(filename)));
+
+        final PipedOutputStream pipeOut = new PipedOutputStream();
+        PipedInputStream pipeIn = new PipedInputStream(pipeOut);
+
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                    double lastTime = -1;
+                    while(fileScanner.hasNextLine()) {
+                        try {
+
+                            String line = fileScanner.nextLine();
+
+                            String[] parts = line.split(",");
+
+                            double time = Double.parseDouble(parts[0]);
+                            String key = parts[1];
+                            double value = Double.parseDouble(parts[2]);
+
+                            if(lastTime < 0)
+                                lastTime = time;
+
+                            log.warn(line);
+
+                            if(time-lastTime > 0) {
+                                Thread.sleep((int)(time-lastTime));
+                            }
+
+                            lastTime=time;
+
+                            String keyPrefix = key.split("\\.")[0];
+
+                            if(charts.containsKey(keyPrefix)) {
+                                charts.get(keyPrefix).plot(key, time, value);
+                            } else {
+                                ChartPanel chart = new ChartPanel();
+                                charts.put(keyPrefix, chart);
+                                tabs.addTab(keyPrefix, chart);
+                                chart.plot(key, time, value);
+                            }
+                        } catch(Exception e) {
+                            log.error("Error reading blackbox log", e);
+                        }
+                    }
+
+                fileScanner.close();
+            }
+        });
+
+        t.setDaemon(true);
+        t.setName("Test UI File reading");
+        t.start();
+
+        begin(pipeIn);
+    }
+
+
+    private void begin(final InputStream inputStream) {
         //read and parse text from the log appender
         Thread thread = new Thread(new Runnable() {
 
@@ -111,7 +209,10 @@ public class TestUI extends Pubscriber {
         thread.start();
     }
 
-    //create on display chart window
+    /**
+     * When spring constructs the testui, we configure
+     * the blackbox log appender
+     */
     @PostConstruct
     public void init() {
 
@@ -121,6 +222,11 @@ public class TestUI extends Pubscriber {
             e.printStackTrace();
         }
 
+        constructFrame();
+
+    }
+
+    private void constructFrame() {
         JFrame frame = new JFrame("WebRC TestUI");
         frame.getContentPane().add(tabs);
         frame.setSize(1200, 400);

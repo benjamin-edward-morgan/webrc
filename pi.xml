@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="globalProperties"
+          class="webrc.robot.RobotProperties">
+        <property name="testMode" value="false"/>
+    </bean>
+    <bean id="server" class = "webrc.server.EmbeddedServer"/>
+
+
+    <bean id="i2c" class="webrc.robot.util.I2C"/>
+
+    <bean id="powerSensor" class="webrc.robot.sensor.INA219Sensor">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x41"/>
+        <property name="key" value="battery"/>
+    </bean>
+
+    <!--PWM Controller Board-->
+
+    <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x40"/>
+    </bean>
+
+
+    <!--Pan Servo-->
+
+    <bean id="panPwmControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="15"/>
+    </bean>
+
+    <bean id="panLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0"/>
+        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="4" ref="panPwmControl"/>
+    </bean>
+
+
+    <!--Tilt Servo-->
+
+    <bean id="tiltPwmControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="14"/>
+    </bean>
+    <bean id="tiltLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0"/>
+        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="4" ref="tiltPwmControl"/>
+    </bean>
+
+
+    <!--Steering Servo-->
+
+    <bean id="steeringPwmControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="13"/>
+    </bean>
+    <bean id="steeringLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0.2375"/>
+        <constructor-arg index="3" value="0.4125"/>
+        <constructor-arg index="4" ref="steeringPwmControl"/>
+    </bean>
+    <bean id="steeringCubicTransformControl" class="webrc.robot.control.CubicTransformControl">
+        <property name="maxValue" value="100"/>
+        <property name="innerControl" ref="steeringLinearTransformControl"/>
+    </bean>
+
+
+    <!--Speed Servo-->
+
+    <bean id="speedPwmControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="0"/>
+    </bean>
+    <bean id="speedLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="100"/>
+        <constructor-arg index="1" value="-100"/>
+        <constructor-arg index="2" value="0.2"/>
+        <constructor-arg index="3" value="0.4"/>
+        <constructor-arg index="4" ref="speedPwmControl"/>
+    </bean>
+    <bean id="speedCubicTransformControl" class="webrc.robot.control.CubicTransformControl">
+        <property name="maxValue" value="100"/>
+        <property name="innerControl" ref="speedLinearTransformControl"/>
+    </bean>
+
+
+    <!--all top-level controls mapped to names-->
+    <bean id="controls" class="webrc.robot.control.Controls">
+        <property name="controls">
+            <map>
+                <entry key="pan" value-ref="panLinearTransformControl" />
+                <entry key="tilt" value-ref="tiltLinearTransformControl" />
+                <entry key="steering" value-ref="steeringCubicTransformControl" />
+                <entry key="speed" value-ref="speedCubicTransformControl" />
+            </map>
+        </property>
+    </bean>
+
+    <!--Brokers messages between publishers and subscribers-->
+    <bean id="messageService" class="webrc.robot.messaging.MessageService"/>
+
+</beans>
