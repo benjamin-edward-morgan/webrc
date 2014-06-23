@@ -299,6 +299,8 @@ $(document).ready(
                 cometd.addListener('/meta/handshake', _metaHandshake);
                 cometd.addListener('/meta/connect', _metaConnect);
 
+//                cometd.addListener('/service/data', function(message) {console.log(message); alert(message);});
+
                 cometd.handshake();
 
 

@@ -13,32 +13,57 @@
           class="webrc.robot.RobotProperties">
         <property name="testMode" value="false"/>
     </bean>
+
+    <!--Serves the UI web page and communicates with the browser-->
     <bean id="server" class = "webrc.server.EmbeddedServer"/>
 
+    <!--Brokers messages between publishers and subscribers-->
+    <bean id="messageService" class="webrc.robot.messaging.MessageService"/>
 
-    <bean id="i2c" class="webrc.robot.util.I2C"/>
-
+    <!--Sensors-->
     <bean id="powerSensor" class="webrc.robot.sensor.INA219Sensor">
         <property name="bus" value="1"/>
         <property name="device" value="0x41"/>
         <property name="key" value="battery"/>
     </bean>
 
-    <!--PWM Controller Board-->
+    <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="ifconfig"/>
+        <property name="regexs">
+            <map>
+                <entry key="ip" value="wlan0.*inet addr:(\d+\.\d+\.\d+\.\d+)"/>
+                <entry key="tx" value="wlan0.*RX packets:(\d+)"/>
+                <entry key="rx" value="wlan0.*TX packets:(\d+)"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="iwconfig"/>
+        <property name="regexs">
+            <map>
+                <entry key="ssid" value="wlan0.*ESSID:&quot;([^&quot;]*)&quot;"/>
+                <entry key="bitrate" value="wlan0.*Bit Rate:(\d+\.\d+) [KMG]b/s"/>
+                <entry key="linkQuality" value="wlan0.*Link Quality=(\d+)/\d+"/>
+                <entry key="signal" value="wlan0.*Signal level=(\d+)/\d+"/>
+                <entry key="noise" value="wlan0.*Noise level=(\d+)/\d+"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--Controls-->
+    <bean id="i2c" class="webrc.robot.util.I2C"/>
 
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
         <property name="device" value="0x40"/>
     </bean>
 
-
     <!--Pan Servo-->
-
     <bean id="panPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="15"/>
     </bean>
-
     <bean id="panLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
@@ -47,9 +72,7 @@
         <constructor-arg index="4" ref="panPwmControl"/>
     </bean>
 
-
     <!--Tilt Servo-->
-
     <bean id="tiltPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="14"/>
@@ -62,9 +85,7 @@
         <constructor-arg index="4" ref="tiltPwmControl"/>
     </bean>
 
-
     <!--Steering Servo-->
-
     <bean id="steeringPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="13"/>
@@ -81,9 +102,7 @@
         <property name="innerControl" ref="steeringLinearTransformControl"/>
     </bean>
 
-
     <!--Speed Servo-->
-
     <bean id="speedPwmControl" class="webrc.robot.control.PCA9685pinControl">
         <property name="pca9685Control" ref="PwmControl0"/>
         <property name="pin" value="0"/>
@@ -100,7 +119,6 @@
         <property name="innerControl" ref="speedLinearTransformControl"/>
     </bean>
 
-
     <!--all top-level controls mapped to names-->
     <bean id="controls" class="webrc.robot.control.Controls">
         <property name="controls">
@@ -112,8 +130,4 @@
             </map>
         </property>
     </bean>
-
-    <!--Brokers messages between publishers and subscribers-->
-    <bean id="messageService" class="webrc.robot.messaging.MessageService"/>
-
 </beans>

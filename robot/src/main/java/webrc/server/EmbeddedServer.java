@@ -28,6 +28,9 @@ public class EmbeddedServer extends Pubscriber{
 
     }
 
+    ServerSession mainSession = null;
+
+
     @PostConstruct
     public void init() throws Exception {
 
@@ -46,9 +49,8 @@ public class EmbeddedServer extends Pubscriber{
             }
         };
         resource_handler.setDirectoriesListed(true);
-        resource_handler.setWelcomeFiles(new String[] { "static/rc.html" });
+        resource_handler.setWelcomeFiles(new String[]{"static/rc.html"});
         resource_handler.setResourceBase("static");
-        resource_handler.setDirectoriesListed(true);
 
         //cometd context
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -77,14 +79,18 @@ public class EmbeddedServer extends Pubscriber{
         });
         final ServerChannel channel = bayeux.getChannel(channelName);
 
+
 //        Timer timer = new Timer();
 //        timer.scheduleAtFixedRate(new TimerTask(){
 //            @Override
 //            public void run() {
 //
-//                Map<String, Double> data = new HashMap<String,Double>();
-//                data.put("random", Math.random() * 100);
-//                channel.publish(null, data);
+//                if(mainSession != null) {
+//                    Map<String, Double> data = new HashMap<String,Double>();
+//                    data.put("random", Math.random() * 100);
+//                    channel.publish(mainSession, data);
+//                    log.info("published: " + data);
+//                }
 //
 //            }
 //        }, 5000, 500);
@@ -94,7 +100,12 @@ public class EmbeddedServer extends Pubscriber{
             @Override
             public boolean onMessage(ServerSession serverSession, ServerChannel serverChannel, ServerMessage.Mutable mutable) {
 
-                log.trace("Received: " + mutable.getData() + " on channel " + serverChannel.getId());
+//                log.info("Received: " + mutable.getData() + " on channel " + serverChannel.getId());
+
+                if(serverSession != null) {
+                    mainSession = serverSession;
+//                    log.info("New Server Session!!!");
+                }
 
                 publish(mutable.getDataAsMap());
 
