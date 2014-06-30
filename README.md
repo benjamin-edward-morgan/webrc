@@ -88,6 +88,9 @@ i2c-dev
 * comment out `blacklist i2c-bcm2708` with #
 * optional: run `sudo apt-get install i2c-tools`
 
+#####Disable Camera LED
+`disable_camera_led=1` to `/boot/config.txt`
+
 #####Change Java Versions
 * use `update-java-alternatives -l` to list available java vms
 * use `sudo update-java-alternatives -s jdk-7-oracle-armhf` to enable oracle java 7
