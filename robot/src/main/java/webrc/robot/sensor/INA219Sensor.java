@@ -45,7 +45,7 @@ public class INA219Sensor extends Sensor{
     private double currentLSB = 0.00015;
     private double powerLSB = 0.003;
 
-    public String key = "current sensor";
+    public String key = "battery";
 
 
     public void setBus(int bus) {
@@ -121,9 +121,14 @@ public class INA219Sensor extends Sensor{
                             double s = shuntVoltage*shuntLSB;
 //                            double p = c*v;
 
+                            //approx percentage charge
+                            double percentage = (v-11.1)/(12.6-11.1)*100.0;
+
                             Map<String, Object> values = new HashMap<String, Object>();
-                            values.put(key+".voltage", v);
-                            values.put(key+".shunt", s);
+                            values.put(key+"_voltage", v);
+                            values.put(key+"_shunt", s);
+                            values.put(key+"_percentage", percentage);
+
 //                            values.put(key+".power", p);
 
 

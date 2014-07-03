@@ -19,19 +19,21 @@ html, body
  -webkit-text-size-adjust: none;
 }
 
-h1, h2, h3, h4, h5, h6{ font-weight: normal; }
+h1, h2, h3, h4, h5, h6{ font-weight: normal; vertical-align: top; padding: 50px;}
 
-p img { float: left; margin: 0 10px 5px 0; padding: 0; }
+p { margin: 0 0 0 0; padding: 20px; display: inline; width: auto; vertical-align: top; font-size: large;}
 
-img { border: 0; max-width: 100%; }
+p img { margin: 0 0 0 0; padding: 0; display: inline; width: auto;}
+
+img { border: 0; max-width: 100%; display: inline;}
 
 table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
-#title { font-family: 'Audiowide', cursive; margin: 0 auto; display: block; position: absolute; text-align: center; width: 100%;}
+#title { font-family: 'Audiowide', cursive; margin: 0 auto; display: inline; position: relative; text-align: left; padding: 50px;}
 
 /* Custom Styles */
 
-#container { width: 100%; height: 100%; min-height: 320px; min-width: 320px; }
+#container { height: 100%; min-height: 320px;}
 
 /* Menu Styles */
 
@@ -39,15 +41,9 @@ table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
 #bottom-menu-container { background: #000; width: 100%; position: absolute; bottom: 0; z-index: 99; opacity: .5; }
 
-#result1, #result2 { position: absolute; top: 0; margin-top: 10px; }
+.hud {margin: 0; height: 50px; position: relative; }
 
-#result1 { right: 0; margin-right: 10px; }
-
-#result2 { left: 0; margin-left: 10px; }
-
-.hud { max-width: 600px; margin: 0 auto; height: 50px; position: relative; }
-
-.hud .button { background: #fff; padding: 7px 10px; color: #000; height: 36px; display: inline-block; }
+.hud .button { background: #fff; padding: 7px 10px; color: #000; height: 36px; display: inline; }
 
 .hud ul { list-style: none; margin: 0; padding: 0;  }
 
@@ -56,32 +52,6 @@ table { width:auto; border-collapse: collapse;border-spacing: 0; }
 #camera-options-menu { display: none; position: absolute; top: -92px; background: #fff; left: 0; padding: 10px; }
 
 #camera-options-menu a { color: #000; text-decoration: none; }
-
-/* Wifi & Battery Styles */
-
-#wifi, #battery { width: 50px; height: 50px; position: relative; }
-
-#wifi { float: left; }
-
-#battery { float: right; }
-
-#wifi .label { position: absolute; top: 0; left: 0; color: #17ff2d; font-size: 10px; }
-
-#battery .label { position: absolute; top: 0; right: 0px; color: #ff0000; font-size: 10px; }
-
-#wifi .one, #wifi .two, #wifi .three, #wifi .four, #wifi .five { background: #17ff2d; display: inline-block; margin-top: 15px; }
-
-#battery .one, #battery .two, #battery .three, #battery .four, #battery .five { background: #ff0000; display: inline-block; margin-top: 15px; }
-
-#wifi .one, #battery .five { height: 5px; width: 5px; }
-
-#wifi .two, #battery .four { height: 10px; width: 5px; }
-
-#wifi .three, #battery .three { height: 15px; width: 5px; }
-
-#wifi .four, #battery .two { height: 20px; width: 5px; }
-
-#wifi .five, #battery .one { height: 25px; width: 5px; }
 
 
 /* Base Controller Styles */

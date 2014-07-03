@@ -30,10 +30,6 @@ $(document).ready(
 
             var subscription = null;
 
-			$("#camera-options").click(function(){
-				$("#camera-options-menu").toggle();
-			});
-
 			$(document).keydown(function(key) {
 				switch (parseInt(key.which, 10)) {
 				case driveKeyLeft:
@@ -126,14 +122,9 @@ $(document).ready(
 
 				}
 			});
-			
-			function log(msg) {
-			    setTimeout(function() {
-			        throw new Error("LOG: " + msg);
-			    }, 0);
-			}
 
 			// call server with updated control state
+			// use cometd to push commands to vehicle
 			function update() {
 				
 				if (driveX != driveX_0 || driveY != driveY_0
@@ -150,7 +141,7 @@ $(document).ready(
 					dat['pan'] = camX_0;
 					dat['tilt'] = camY_0;
 
-                    cometd.publish('/service/data', dat);
+                    cometd.publish('/data/up', dat);
 
                 }
 			}
@@ -172,14 +163,6 @@ $(document).ready(
 			});
 			
 			setInterval(function() {
-				var outputE2 = document.getElementById('result2');
-				outputE2.innerHTML = '<b>Result:</b> ' + ' dx:'
-						+ joystick_left.deltaX() + ' dy:'
-						+ joystick_left.deltaY()
-						+ (joystick_left.right() ? ' right' : '')
-						+ (joystick_left.up() ? ' up' : '')
-						+ (joystick_left.left() ? ' left' : '')
-						+ (joystick_left.down() ? ' down' : '');
 
 			if (VirtualJoystick.touchScreenAvailable()) {
 				driveX = joystick_left.deltaX();
@@ -206,14 +189,6 @@ $(document).ready(
 			});
 
 			setInterval(function() {
-				 var outputEl = document.getElementById('result1');
-				 outputEl.innerHTML = '<b>Result:</b> ' + ' dx:'
-				 + joystick_right.deltaX() + ' dy:'
-				 + joystick_right.deltaY()
-				 + (joystick_right.right() ? ' right' : '')
-				 + (joystick_right.up() ? ' up' : '')
-				 + (joystick_right.left() ? ' left' : '')
-				 + (joystick_right.down() ? ' down' : '');
 
 			 if (VirtualJoystick.touchScreenAvailable()) {
 				camX = joystick_right.deltaX();
@@ -229,21 +204,103 @@ $(document).ready(
                 function _connectionEstablished()
                 {
                     console.log("connection established");
+                    updateConnectionStatus("Connected");
                 }
 
                 function _connectionBroken()
                 {
                     console.log("connection broken");
+                    updateConnectionStatus("Disconnected");
+                    updateWifiStatus(-1);
+                    updateBatteryStatus(-1);
+                    updateBatteryVoltage(null);
                 }
 
                 function _connectionClosed()
                 {
                     console.log("connection closed");
+                    updateConnectionStatus("Disconnected");
+                    updateWifiStatus(-1);
+                    updateBatteryStatus(-1);
+                    updateBatteryVoltage(null);
                 }
 
                 function _handlemessage(message)
                 {
-                    console.log("recieved :" + message);
+                    console.log("recieved: " + JSON.stringify(message));
+
+                    if(message.data.signal) {
+                        var signal = message.data.signal;
+                        updateWifiStatus(signal);
+                    }
+
+                    if(message.data.battery_voltage) {
+                        var voltage = message.data.battery_voltage;
+                        updateBatteryVoltage(voltage);
+                    }
+
+                    if(message.data.battery_percentage) {
+                        var status = message.data.battery_percentage;
+                        updateBatteryStatus(status);
+                    }
+                }
+
+                function updateBatteryVoltage(voltage) {
+                    var text = document.getElementById("batteryVoltage");
+
+                    if(voltage != null) {
+                        text.innerHTML=Math.round(voltage*100)/100 + " V";
+                    } else {
+                        text.innerHTML="--V";
+                    }
+
+                }
+
+                function updateConnectionStatus(status) {
+                    var text = document.getElementById("connectionStatus");
+
+                    text.innerHTML=status;
+                }
+
+                function updateWifiStatus(signal) {
+                    var icon = document.getElementById("wifiIcon");
+
+                    if(signal >= 80) {
+                        icon.src="icons/wifi5.svg";
+                    } else if(signal >= 64) {
+                        icon.src="icons/wifi4.svg";
+                    } else if(signal >= 48) {
+                        icon.src="icons/wifi3.svg";
+                    } else if(signal >= 32) {
+                        icon.src="icons/wifi2.svg";
+                    } else if(signal >= 16) {
+                        icon.src="icons/wifi1.svg";
+                    } else if(signal >= 0) {
+                        icon.src="icons/wifi0.svg";
+                    } else {
+                        icon.src="icons/wifi-wtf.svg";
+                    }
+                }
+
+                function updateBatteryStatus(status) {
+                    var icon = document.getElementById("batteryIcon");
+
+                    if(status >= 80) {
+                        icon.src="icons/batt5.svg";
+                    } else if(status >= 64) {
+                        icon.src="icons/batt4.svg";
+                    } else if(status >= 48) {
+                        icon.src="icons/batt3.svg";
+                    } else if(status >= 32) {
+                        icon.src="icons/batt2.svg";
+                    } else if(status >= 16) {
+                        icon.src="icons/batt1.svg";
+                    } else if(status >= 0) {
+                        icon.src="icons/batt0.svg";
+                    } else {
+                        icon.src="icons/batt-wtf.svg";
+                    }
+
                 }
 
                 // Function that manages the connection status with the Bayeux server
@@ -273,13 +330,12 @@ $(document).ready(
                 // when the server has lost the state of this client
                 function _metaHandshake(handshake)
                 {
-                    console.log("handshake!!!");
                     if (handshake.successful === true)
                     {
-                        console.log("successful");
+                        console.log("handshake successful...");
 
-                        console.log("subscribing....");
-                        subscription = cometd.subscribe('/service/data', _handlemessage);
+                        console.log("subscribing to server updates...");
+                        subscription = cometd.subscribe('/data/down', _handlemessage);
                     }
                 }
 
@@ -290,16 +346,13 @@ $(document).ready(
                 });
 
                 var cometURL = location.protocol + "//" + location.host + "/webrc/bayeux";
-                console.log(cometURL);
                 cometd.configure({
                     url: cometURL,
-                    logLevel: 'debug'
+                    logLevel: 'info'
                 });
 
                 cometd.addListener('/meta/handshake', _metaHandshake);
                 cometd.addListener('/meta/connect', _metaConnect);
-
-//                cometd.addListener('/service/data', function(message) {console.log(message); alert(message);});
 
                 cometd.handshake();
 

@@ -1,19 +1,23 @@
 package webrc.server;
 
 import org.cometd.bayeux.server.*;
+import org.cometd.server.BayeuxServerImpl;
 import org.cometd.server.CometdServlet;
+import org.cometd.server.authorizer.GrantAuthorizer;
+import org.cometd.websocket.server.WebSocketTransport;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.resource.Resource;
 import webrc.robot.messaging.Pubscriber;
 
 import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,13 +32,20 @@ public class EmbeddedServer extends Pubscriber{
 
     }
 
-    ServerSession mainSession = null;
+    //TODO: keep track of multiple users in a queue
+    private ServerSession mainSession = null;
+
+    private ServerChannel downChannel;
+
+    //keys in 'relay' are relayed to the client
+    public Set<String> relay;
+    public void setRelay(Set<String> relay) {
+        this.relay = relay;
+    }
 
 
     @PostConstruct
     public void init() throws Exception {
-
-        Server server = new Server(12345);
 
         //static resource handler
         ResourceHandler resource_handler = new ResourceHandler() {
@@ -55,71 +66,87 @@ public class EmbeddedServer extends Pubscriber{
         //cometd context
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/webrc");
+        CometdServlet cometd = new CometdServlet();
+        ServletHolder holder = new ServletHolder(cometd);
+        context.addServlet(holder, "/bayeux/*");
+        context.addFilter(CrossOriginFilter.class, "/bayeux/*", null);
 
-        ServletHolder holder = context.addServlet(CometdServlet.class, "/bayeux/*");
-
+        //configure and start the server
+        Server server = new Server(12345);
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] {resource_handler, context});
         server.setHandler(handlers);
-
-
         server.start();
 
-        CometdServlet servlet = (CometdServlet) holder.getServlet();
+        BayeuxServerImpl bayeux = cometd.getBayeux();
 
+        //enable websocket transport
+        WebSocketTransport wsTransport = new WebSocketTransport(bayeux);
+        wsTransport.init();
+        bayeux.addTransport(wsTransport);
+        bayeux.setAllowedTransports(new ArrayList<String>(bayeux.getKnownTransportNames()));
 
-        BayeuxServer bayeux = servlet.getBayeux();
-
-        String channelName = "/service/data";
-        bayeux.createChannelIfAbsent(channelName, new ServerChannel.Initializer() {
+        //create 'up' channel (pi -> server)
+        String upChannelName = "/data/up";
+        bayeux.createChannelIfAbsent(upChannelName, new ServerChannel.Initializer() {
             @Override
             public void configureChannel(ConfigurableServerChannel configurableServerChannel) {
                 configurableServerChannel.setPersistent(true);
+                configurableServerChannel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
             }
         });
-        final ServerChannel channel = bayeux.getChannel(channelName);
+        final ServerChannel upChannel = bayeux.getChannel(upChannelName);
 
+        //create 'down' channel (server -> pi)
+        String downChannelName = "/data/down";
+        bayeux.createChannelIfAbsent(downChannelName, new ServerChannel.Initializer() {
+            @Override
+            public void configureChannel(ConfigurableServerChannel configurableServerChannel) {
+                configurableServerChannel.setPersistent(true);
+                configurableServerChannel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
+            }
+        });
+        downChannel = bayeux.getChannel(downChannelName);
 
+        //send random data to the client
 //        Timer timer = new Timer();
 //        timer.scheduleAtFixedRate(new TimerTask(){
 //            @Override
 //            public void run() {
 //
-//                if(mainSession != null) {
 //                    Map<String, Double> data = new HashMap<String,Double>();
 //                    data.put("random", Math.random() * 100);
-//                    channel.publish(mainSession, data);
+//                    downChannel.publish(null, data);
 //                    log.info("published: " + data);
-//                }
 //
 //            }
 //        }, 5000, 500);
 
-
-        channel.addListener(new ServerChannel.MessageListener(){
+        //receive data from the client
+        upChannel.addListener(new ServerChannel.MessageListener(){
             @Override
             public boolean onMessage(ServerSession serverSession, ServerChannel serverChannel, ServerMessage.Mutable mutable) {
 
-//                log.info("Received: " + mutable.getData() + " on channel " + serverChannel.getId());
+                mainSession = serverSession;
 
-                if(serverSession != null) {
-                    mainSession = serverSession;
-//                    log.info("New Server Session!!!");
-                }
-
+                //publish received data to robot messaging
                 publish(mutable.getDataAsMap());
 
-                return false;
-
+                return true;
             }
         });
 
-        //server.join();
+        //subscribe to 'relay' topics
+        if(relay != null) {
+            this.subscribe(relay);
+        } else {
+            log.warn("relay not set in embedded server. no data will be relayed to client");
+        }
 
     }
 
     @Override
     protected void notify(Map<String, Object> values) {
-        //TODO: publish new values to cometd
+        downChannel.publish(null, values);
     }
 }

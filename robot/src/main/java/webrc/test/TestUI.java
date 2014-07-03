@@ -10,12 +10,14 @@ import webrc.robot.messaging.Pubscriber;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
 
 /**
  * This is a window that graphs input signals for debugging and
@@ -37,6 +39,10 @@ public class TestUI extends Pubscriber {
     //charts by key prefix
     Map<String, ChartPanel> charts = new HashMap<>();
 
+    Set<String> sensors;
+    public void setSensors(Set<String> sensors) {
+        this.sensors = sensors;
+    }
 
     /**Run to replay a log file
      *
@@ -228,7 +234,18 @@ public class TestUI extends Pubscriber {
 
     private void constructFrame() {
         JFrame frame = new JFrame("WebRC TestUI");
-        frame.getContentPane().add(tabs);
+
+        Container c = new Container();
+        c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
+
+        c.add(tabs);
+
+        List<Component> sliders = buildSensorSliders();
+        for(Component slider : sliders) {
+            c.add(slider);
+        }
+
+        frame.getContentPane().add(c);
         frame.setSize(1200, 400);
         frame.addWindowListener(
                 new WindowAdapter() {
@@ -238,6 +255,53 @@ public class TestUI extends Pubscriber {
                 }
         );
         frame.setVisible(true);
+    }
+
+    private java.util.List<Component> buildSensorSliders() {
+
+        ArrayList<Component> sliders = new ArrayList<>();
+
+        for(String sensorString : sensors) {
+            String[] parts = sensorString.split(",");
+            if(parts.length == 3) {
+                final String name = parts[0];
+                final double min = Double.parseDouble(parts[1]);
+                final double max = Double.parseDouble(parts[2]);
+
+                Container a = new Container();
+                a.setLayout(new BoxLayout(a, BoxLayout.X_AXIS));
+                a.add(new JLabel(name));
+
+                final JSlider slider = new JSlider(0, 100, 50);
+                a.add(slider);
+
+                final JLabel valueLabel = new JLabel("--");
+                a.add(valueLabel);
+
+                slider.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        Map<String, Object> values = new HashMap<String, Object>();
+
+                        int sliderValue = slider.getValue();
+                        double value = min + (max-min)*(sliderValue/100.0);
+
+                        valueLabel.setText(value + "");
+
+                        values.put(name, value);
+                        publish(values);
+                    }
+                });
+
+                sliders.add(a);
+
+            } else {
+                log.warn("TestUI could not understand: \"" + sensorString + "\" the sensor description must be of the form \"name,min,max\"");
+            }
+        }
+
+        return sliders;
+
     }
 
 

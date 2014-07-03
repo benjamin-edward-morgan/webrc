@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>DriveByPi</title>
-	<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>-->
+
     <script src="jquery-1.11.0.js"></script>
     <script src="cometd-namespace.js"></script>
     <script src="cometd-json.js"></script>
@@ -27,27 +27,19 @@
 	console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 </script>
 <div id="top-menu-container">
-	<span id="result1"></span>
-	<span id="result2"></span>
 	<div class="hud">
-		<h1 id="title">DriveByPi</h1>
-		<div id="wifi">
-			<span class="label">wifi</span>
-			<span class="one"></span>
-			<span class="two"></span>
-			<span class="three"></span>
-			<span class="four"></span>
-			<span class="five"></span>
-		</div>
-		<div id="battery">
-			<span class="label">battery</span>
-			<span class="one"></span>
-			<span class="two"></span>
-			<span class="three"></span>
-			<span class="four"></span>
-			<span class="five"></span>
-		</div>
-	</div>
+
+        <img id="wifiIcon" src="icons/wifi-wtf.svg" height="100%" />
+
+        <h1 id="title">DriveByPi</h1>
+
+        <img id="batteryIcon" src="icons/batt-wtf.svg" height="100%" />
+
+        <p id="batteryVoltage">--V</p>
+
+        <p id="connectionStatus">Disconnected</p>
+
+    </div>
 </div>
 <div id="container">
 	<div id="controller-left">
@@ -65,19 +57,6 @@
 			<div class="down button"><span>&darr;</span></div>
 			<div class="right button"><span>&rsaquo;</span></div>
 		</div>
-	</div>
-</div>
-<div id="bottom-menu-container">
-	<div class="hud">
-		<ul>
-			<li><a href="#" id="camera-options" class="button"><i class="fa fa-camera"></i></a>
-				<ul id="camera-options-menu">
-					<li><a href="#">Normal Mode</a></li>
-					<li><a href="#">Infared Mode</a></li>
-					<li><a href="#">Night Vision Mode</a></li>
-				</ul>
-			</li>
-		</ul>
 	</div>
 </div>
 </body>

@@ -16,6 +16,18 @@
 
     <bean id="i2c" class="webrc.robot.util.I2C"/>
 
+    <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
+        <property name="command" value="ifconfig"/>
+        <property name="regexs">
+            <map>
+                <!--mac-->
+                <entry key="ip" value="en1:.*inet (\d+\.\d+\.\d+\.\d+)"/>
+                <entry key="rx" value="en1:.*media: ([a-z]+)"/>
+                <entry key="tx" value="en1:.*status: ([a-z]+)"/>
+            </map>
+        </property>
+    </bean>
+
     <!--PWM Controller Board-->
     <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
         <property name="bus" value="1"/>
@@ -109,9 +121,28 @@
 
     <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
 
-    <bean id="server" class = "webrc.server.EmbeddedServer"/>
+    <!--Serves the UI web page and communicates with the browser-->
+    <bean id="server" class = "webrc.server.EmbeddedServer">
+        <property name="relay">
+            <set>
+                <value>battery_voltage</value>
+                <value>battery_percentage</value>
+                <value>signal</value>
+            </set>
+        </property>
+    </bean>
 
-    <bean id="testui" class="webrc.test.TestUI"/>
+
+    <bean id="testui" class="webrc.test.TestUI">
+        <property name="sensors">
+            <set>
+                <value>battery_voltage,11.1,12.46</value>
+                <value>battery_percentage,-1,100</value>
+                <value>signal,-1,100</value>
+
+            </set>
+        </property>
+    </bean>
 
 
 </beans>
