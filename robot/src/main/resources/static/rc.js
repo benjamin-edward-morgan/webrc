@@ -225,6 +225,7 @@ $(document).ready(
                     updateBatteryVoltage(null);
                 }
 
+                //handle a server-pushed message
                 function _handlemessage(message)
                 {
                     console.log("recieved: " + JSON.stringify(message));

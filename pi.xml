@@ -18,7 +18,8 @@
     <bean id="server" class = "webrc.server.EmbeddedServer">
         <property name="relay">
             <set>
-                <value>battery.voltage</value>
+                <value>battery_voltage</value>
+                <value>battery_percentage</value>
                 <value>signal</value>
             </set>
         </property>
@@ -34,16 +35,16 @@
         <property name="key" value="battery"/>
     </bean>
 
-    <bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">
-        <property name="command" value="ifconfig"/>
-        <property name="regexs">
-            <map>
-                <entry key="ip" value="wlan0.*inet addr:(\d+\.\d+\.\d+\.\d+)"/>
-                <entry key="tx" value="wlan0.*RX packets:(\d+)"/>
-                <entry key="rx" value="wlan0.*TX packets:(\d+)"/>
-            </map>
-        </property>
-    </bean>
+    <!--<bean id="ipSensor" class="webrc.robot.sensor.CommandLineSensor">-->
+        <!--<property name="command" value="ifconfig"/>-->
+        <!--<property name="regexs">-->
+            <!--<map>-->
+                <!--<entry key="ip" value="wlan0.*inet addr:(\d+\.\d+\.\d+\.\d+)"/>-->
+                <!--<entry key="tx" value="wlan0.*RX packets:(\d+)"/>-->
+                <!--<entry key="rx" value="wlan0.*TX packets:(\d+)"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <bean id="wifiSensor" class="webrc.robot.sensor.CommandLineSensor">
         <property name="command" value="iwconfig"/>
@@ -125,6 +126,13 @@
         <property name="maxValue" value="100"/>
         <property name="innerControl" ref="speedLinearTransformControl"/>
     </bean>
+    <bean id="speedLimiterControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="-50"/>
+        <constructor-arg index="3" value="50"/>
+        <constructor-arg index="4" ref="speedPwmControl"/>
+    </bean>
 
     <!--all top-level controls mapped to names-->
     <bean id="controls" class="webrc.robot.control.Controls">
@@ -133,7 +141,7 @@
                 <entry key="pan" value-ref="panLinearTransformControl" />
                 <entry key="tilt" value-ref="tiltLinearTransformControl" />
                 <entry key="steering" value-ref="steeringCubicTransformControl" />
-                <entry key="speed" value-ref="speedCubicTransformControl" />
+                <entry key="speed" value-ref="speedLimiterControl" />
             </map>
         </property>
     </bean>

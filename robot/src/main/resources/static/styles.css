@@ -4,7 +4,6 @@ html, body
  margin: 0;
  padding: 0; 
  border: 0;
- background: url("ponce.jpg") center center no-repeat fixed;
  -webkit-background-size: cover;
  -moz-background-size: cover;
  -o-background-size: cover;

@@ -8,7 +8,9 @@ import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +46,7 @@ public class INA219Sensor extends Sensor{
     private double busLSB = 0.004;
     private double currentLSB = 0.00015;
     private double powerLSB = 0.003;
+    private int samples = 30;
 
     public String key = "battery";
 
@@ -58,6 +61,10 @@ public class INA219Sensor extends Sensor{
 
     public void setUpdatePeriod(int ms) {
         this.updatePeriod=ms;
+    }
+
+    public void setSamples(int samples) {
+        this.samples = samples;
     }
 
     public void setKey(String k) {
@@ -98,6 +105,8 @@ public class INA219Sensor extends Sensor{
             @Override
             public void run() {
 
+                List<Double> voltages = new ArrayList<Double>(samples);
+
                 for(;;) {
 
                     if(!robotProperties.isTestMode()) {
@@ -121,8 +130,15 @@ public class INA219Sensor extends Sensor{
                             double s = shuntVoltage*shuntLSB;
 //                            double p = c*v;
 
+                            voltages.add(v);
+                            while(voltages.size() > samples) {
+                                voltages.remove(0);
+                            }
+
+                            double averageV = average(voltages);
+
                             //approx percentage charge
-                            double percentage = (v-11.1)/(12.6-11.1)*100.0;
+                            double percentage = (averageV-11.1)/(12.6-11.1)*100.0;
 
                             Map<String, Object> values = new HashMap<String, Object>();
                             values.put(key+"_voltage", v);
@@ -135,6 +151,8 @@ public class INA219Sensor extends Sensor{
                             for(String key : values.keySet()) {
                                 blackbox.info(key+",{}", values.get(key));
                             }
+
+                            publish(values);
 
 
 
@@ -156,6 +174,14 @@ public class INA219Sensor extends Sensor{
         t.setDaemon(true);
         t.setName("INA219 Polling Thread: " + key);
         t.start();
+    }
+
+    private double average(List<Double> numbers) {
+        double sum = 0;
+        for(Double num : numbers) {
+            sum += num;
+        }
+        return sum/numbers.size();
     }
 
 }
