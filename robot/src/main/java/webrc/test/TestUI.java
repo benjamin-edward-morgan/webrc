@@ -261,6 +261,7 @@ public class TestUI extends Pubscriber {
 
         ArrayList<Component> sliders = new ArrayList<>();
 
+        if(sensors != null)
         for(String sensorString : sensors) {
             String[] parts = sensorString.split(",");
             if(parts.length == 3) {
