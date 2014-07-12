@@ -38,5 +38,4 @@ module nerfprojectile() {
 	nerftip();
 
 }
-
-//nerfprojectile();
+nerfprojectile();
