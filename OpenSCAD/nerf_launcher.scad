@@ -232,8 +232,14 @@ module assembly() {
 
 	plunger_assembly();
 	
+	difference() {
+	
 	translate([0,0,nerfbodyheight/2+spikePlateThickness+stopPlateHeight+tubeHeight+interfaceHeight])
 		nerfprojectile();
+
+		cut_cube();
+	}
+	
 }
 	
 //cut_cube();

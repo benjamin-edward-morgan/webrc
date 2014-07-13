@@ -130,6 +130,7 @@
                 <value>signal</value>
             </set>
         </property>
+        <property name="port" value="8080"/>
     </bean>
 
 

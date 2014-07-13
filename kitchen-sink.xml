@@ -168,7 +168,17 @@
 
     <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
 
-    <bean id="server" class = "webrc.server.EmbeddedServer"/>
+    <bean id="server" class = "webrc.server.EmbeddedServer">
+        <property name="port" value="8080"/>
+        <property name="relay">
+            <set>
+                <value>battery_voltage</value>
+                <value>battery_percentage</value>
+                <value>signal</value>
+            </set>
+        </property>
+    </bean>
+
 
     <bean id="testui" class="webrc.test.TestUI"/>
 

@@ -37,6 +37,11 @@ public class EmbeddedServer extends Pubscriber{
 
     private ServerChannel downChannel;
 
+    private int port=8080;
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     //keys in 'relay' are relayed to the client
     public Set<String> relay;
     public void setRelay(Set<String> relay) {
@@ -72,7 +77,7 @@ public class EmbeddedServer extends Pubscriber{
         context.addFilter(CrossOriginFilter.class, "/bayeux/*", null);
 
         //configure and start the server
-        Server server = new Server(12345);
+        Server server = new Server(port);
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] {resource_handler, context});
         server.setHandler(handlers);

@@ -16,6 +16,7 @@
 
     <!--Serves the UI web page and communicates with the browser-->
     <bean id="server" class = "webrc.server.EmbeddedServer">
+        <property name="port" value="8080"/>
         <property name="relay">
             <set>
                 <value>battery_voltage</value>
