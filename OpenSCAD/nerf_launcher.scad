@@ -1,71 +1,201 @@
 include<nerfprojectile.scad>;
+include<global_parameters.scad>;
 
-spikePlateThickness = 1.5;
+
+
+//wall thickness for barrel and tube
 thickness = 2;
-oringThickness = 1;
-oringRadius = 13;
-oringPosition = 5;
-hookWidth=8;
-hookThickness=3;
-hookHeight=2;
-spikeHeight = nerfbodyheight*0.75;
-tubeInnerRadius = oringRadius;
+
+//spike
+spike_taper = 0.6;
+spikeR1=nerfbodyradius_inner-xy_fudge;
+spikeR2=spikeR1*spike_taper;
+spikeHeight=nerfbodyheight*0.85;
+spikePlateThickness = 1.5;
+
+//barrel
+barrelInnerRadius = nerfbodyradius_outer+0.3+xy_fudge;
+barrelOuterRadius = barrelInnerRadius+thickness;
+barrelHeight = nerfbodyheight*0.9;
+
+//oRing
+oRingMinorRadius = 1.4/2;
+oRingMajorRadius = 10;
+
+//tube
+tubeInnerRadius = oRingMajorRadius+oRingMinorRadius;
 tubeOuterRadius = tubeInnerRadius+thickness;
 tubeHeight = 40;
-barrelOuterRadius = nerfbodyradius_outer+thickness;
-barrelInnerRadius = nerfbodyradius_outer+epsilon;
 
-spikeRadius1 = nerfbodyradius_inner - epsilon;
-spikeRadius2 = spikeRadius1/2;
+//plug
+plugRadius = oRingMajorRadius+oRingMinorRadius/2-xy_fudge;
+plugHeight = 6*oRingMinorRadius;
 
-stopPlateThickness = hookWidth+hookHeight;
+//interface
+interfaceHeight=tubeOuterRadius-barrelOuterRadius;
+
+//pusher
+pusherRadius = plugRadius;
+pusherHeight = tubeHeight-plugHeight;
 
 tol = 0.1;
 
 $fn = 45;
 
+//hook
+hookWidth=8;
+hookThickness=3;
+hookHeight=2;
 
-module cutCube() { 
-rotate(-45)
-translate([0,0,-100])
-cube(size=[100,100,200]);
+//stop plate
+stopPlateHeight = hookWidth+hookHeight;
+
+
+//translate([0,0,nerfbodyheight/2+spikePlateThickness])
+//	nerfprojectile();
+
+//spike();
+module spike() {
+	cylinder(r1=spikeR1, r2=spikeR2, h=spikeHeight);
 }
 
-/*
-difference() 
-{
-	translate([0,0,nerfbodyheight/2])
-	 nerfprojectile();
-
-	color("red")
-	cutCube();
+//spike_plate();
+module spike_plate() {
+	translate([0,0,spikePlateThickness/2])
+		cube(size=[barrelInnerRadius*2,spikeR1*2,spikePlateThickness], center=true);
 }
 
-
-color("Chartreuse") {
+//barrel();
+module barrel() {
 	difference() {
-		barrelTube();
-		cutCube();
+		cylinder(r=barrelOuterRadius, h=nerfbodyheight);
+
+		translate([0,0,-epsilon])
+			cylinder(r=barrelInnerRadius,h=nerfbodyheight+2*epsilon);
 	}
-	spike();
 }
-*/
 
-//translate([0,0,-tubeHeight+barrelOuterRadius-tubeOuterRadius])
-//plungerAssembly();
+//spike_barrel();
+module spike_barrel() {
+	union() {
+		barrel();
+		spike_plate();
+		translate([0,0,spikePlateThickness])
+			spike();
+	}
+}
 
-printPlate();
+//oring();
+module oring(minorRadius=oRingMinorRadius, majorRadius=oRingMajorRadius) {
+	rotate_extrude() 
+	translate([majorRadius,0])
+		circle(r=minorRadius);
+}
 
-module printPlate() {
+//tube();
+module tube() {
+	difference() {
+		cylinder(r=tubeOuterRadius, h=tubeHeight);
+
+		translate([0,0,-epsilon])
+			cylinder(r=tubeInnerRadius,h=tubeHeight+2*epsilon);
+	}
+}
+
+//translate([0,0,plugHeight/2+pusherHeight])
+//	plug();
+module plug() {
+	difference() {
+		cylinder(r=plugRadius, h=plugHeight, center=true);
+		oring(minorRadius=oRingMinorRadius+xy_fudge, majorRadius=oRingMajorRadius);
+	}
+}
+
+//pusher();
+module pusher() {
+	translate([0,0,-epsilon])
+		cylinder(r=pusherRadius, h=pusherHeight+2*epsilon);
+}
+
+//stop_plate();
+module stop_plate() {
+	cylinder(r=tubeOuterRadius,h=stopPlateHeight);
+}
+
+//plunger();
+module plunger() {
+	union() {
+		stop_plate();
+
+		translate([0,0,stopPlateHeight])
+			pusher();
+
+		translate([0,0,stopPlateHeight+pusherHeight+plugHeight/2])
+			plug();		
+	}
+}
+
+//plunger_hooks();
+module plunger_hooks() {
+	union() {
+		plunger();
+
+		for(i=[0,90,180,270])
+			rotate([0,0,i])
+			translate([tubeOuterRadius,0,stopPlateHeight])
+			rotate([180,0,0])
+				hook();
+	}
+}
+		
+
+//interface();
+module interface() {
+	difference() {
+		cylinder(r2=barrelOuterRadius,r1=tubeOuterRadius,h=interfaceHeight);
+
+		translate([0,0,-epsilon])	
+			cylinder(r2=barrelInnerRadius-epsilon,r1=tubeInnerRadius+epsilon,h=interfaceHeight+2*epsilon);
+	}
+}
+
+//translate([0,0,stopPlateHeight])
+//color([0.5,0.5,0.5,0.5])
+//tube_interface_barrel();
+module tube_interface_barrel() {
+	union() {
+		tube();
 	
-	translate([0,0,stopPlateThickness])
-	plunger();
+		translate([0,0,tubeHeight])
+			interface();
 
-	translate([30, 30,-(barrelOuterRadius-tubeOuterRadius-tubeHeight)])
-	barrelTube();
+		translate([0,0,tubeHeight+interfaceHeight])
+			spike_barrel();
+	}
+}
+
+//tube_interface_barrel_hooks();
+module tube_interface_barrel_hooks() {
+	union() {
+		
+		tube_interface_barrel();
+		
+		difference() {
+		for(i=[0,90,180,270])
+				rotate([0,0,i])
+				translate([tubeOuterRadius,0,-hookWidth+tubeHeight])
+				hook();
+
+		translate([0,0,-epsilon])
+			cylinder(r=tubeInnerRadius,h=tubeHeight+2*epsilon);
+		}
+
+	}
 }
 
 
+
+//hook();
 module hook() {
 	rotate([90,0,0])
 	linear_extrude(height=hookThickness,center=true)
@@ -81,103 +211,35 @@ module hook() {
 		[0,0]]);
 }
 
-
-module plungerAssembly() {
+//plunger_assembly();
+module plunger_assembly() {
 	color("red")
-	plunger();
+	plunger_hooks();
 
 	color("black")
-	translate([0,0,tubeHeight-oringPosition])
+	translate([0,0,tubeHeight+stopPlateHeight-plugHeight/2])
 	oring();
 }
+
+assembly();
+module assembly() {
+	translate([0,0,stopPlateHeight])
+	color([0.5,0.5,0.5])
+		difference() {
+			tube_interface_barrel_hooks();
+			cut_cube();
+		}
+
+	plunger_assembly();
 	
-
-module plunger() {
-
-	difference() {
-		union() {
-		cylinder(r=tubeInnerRadius-tol*2, h=tubeHeight);
-		
-		translate([0,0,-stopPlateThickness])
-			cylinder(r=tubeOuterRadius, h=stopPlateThickness);
-
-		for(i=[0,90,180,270])
-		rotate([0,0,i])
-		translate([tubeOuterRadius,0,0])
-		rotate([180,0,0])
-		hook();
-		}
-
-
-
-		translate([0,0,tubeHeight-oringPosition])
-		oring();
-	}
-
+	translate([0,0,nerfbodyheight/2+spikePlateThickness+stopPlateHeight+tubeHeight+interfaceHeight])
+		nerfprojectile();
 }
-
-module oring() {
 	
-	rotate_extrude() 
-	translate([oringRadius,0])
-		circle(r=oringThickness/2);
+//cut_cube();
+module cut_cube() {
+	cube(200,200,200);
 }
 
 
-module barrelTube() {
-	union() {
-		//barrel
-		difference() {
-			cylinder(r=barrelOuterRadius, h=nerfbodyheight);
 
-			translate([0,0,-epsilon])
-				cylinder(r=barrelInnerRadius,h=nerfbodyheight+2*epsilon);
-		}
-
-		//interface
-		difference() {
-			translate([0,0,barrelOuterRadius-tubeOuterRadius])
-				cylinder(r2=barrelOuterRadius,r1=tubeOuterRadius,h=tubeOuterRadius-barrelOuterRadius);
-
-			translate([0,0,barrelOuterRadius-tubeOuterRadius-epsilon])	
-				cylinder(r2=barrelInnerRadius-epsilon,r1=tubeInnerRadius+epsilon,h=tubeOuterRadius-barrelOuterRadius+2*epsilon);
-		}
-
-		//tube
-		translate([0,0,barrelOuterRadius-tubeOuterRadius-tubeHeight])
-		difference() {
-
-			union() {
-			cylinder(r=tubeOuterRadius, h=tubeHeight);
-
-			for(i=[0,90,180,270])
-				rotate([0,0,i])
-				translate([tubeOuterRadius,0,-hookWidth+tubeHeight])
-				hook();
-			}
-
-			translate([0,0,-epsilon])
-				cylinder(r=tubeInnerRadius,h=tubeHeight+2*epsilon);
-		}
-
-		
-
-		//spike
-		spike();
-	}
-}
-
-module spike() {
-	union() {
-	cylinder(r1=nerfbodyradius_inner-tol, r2=(nerfbodyradius_inner-tol)*0.6, h=spikeHeight);
-
-	intersection() 
-	{
-	translate([0,0,-spikePlateThickness/2])
-	cube(size=[(nerfbodyradius_inner-tol)*2,2*tubeOuterRadius,spikePlateThickness],center=true);
-
-	translate([0,0,barrelOuterRadius-tubeOuterRadius])
-	cylinder(r2=barrelOuterRadius,r1=tubeOuterRadius,h=tubeOuterRadius-barrelOuterRadius);
-	}
-	}
-}

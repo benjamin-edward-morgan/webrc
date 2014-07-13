@@ -1,7 +1,7 @@
 /*nerfprojectile to scale (millimeters)*/
 
 epsilon = 0.01;
-nerfbodyheight = 58.5;
+nerfbodyheight = 64;
 nerfbodyradius_outer = 12/2;
 nerfbodyradius_inner = 5.5/2;
 nerftipheight = nerfbodyheight/2;
@@ -38,4 +38,5 @@ module nerfprojectile() {
 	nerftip();
 
 }
-nerfprojectile();
+
+//nerfprojectile();
