@@ -9,3 +9,6 @@ dev_boards.scad borrowed from https://www.thingiverse.com/thing:126652
 
 OpenRC_110_RC_Differential borrowed from http://www.thingiverse.com/thing:35104
 (creative commons attribution)
+
+Raspberry pi camera case/enclosure borrowed from http://www.thingiverse.com/thing:92208
+DANGER: Creative Commons - Attribution - Non-Commercial

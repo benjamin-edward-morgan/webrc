@@ -11,3 +11,6 @@ z_fudge = 0.1;
 
 //to convert inches to mm
 mm_in_1in = 25.4;
+
+
+epsilon = 0.01;

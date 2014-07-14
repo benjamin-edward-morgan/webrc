@@ -35,7 +35,7 @@ translate([camDispSide,camDispBottom,depth])cube([camSide,camSide,depth]);
 }
 //camera();
 
-module baseCam(){ union(){cameraBack(); camera();}
+module baseCam(){ union(){color("PaleGreen") cameraBack(); color("DarkBlue") camera();}
 
 }
 

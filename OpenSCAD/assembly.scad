@@ -2,6 +2,11 @@ include<differential_assembly.scad>
 include<motor.scad>;
 include<dev_boards.scad>;
 include<rcbattery.scad>;
+include<pantilt1.scad>;
+
+translate([0,250,50])
+rotate(90)
+pan_tilt_assembly();
 
 translate([20+26/2,150,50])
 rotate([0,90,90])
