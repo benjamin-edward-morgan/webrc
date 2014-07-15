@@ -7,36 +7,75 @@ enclosure_front_z=10;
 
 thickness=2;
 
-/*
-
-translate([-servo_width/2-thickness,20,-5])
-rotate([0,90,180])
-camera_assembly();
-*/
-
 servo_mount_height = 10;
 servo_mount_hole_r = 0.9;
 
 support_thickness = 1.0;
 
-arm_a = 20;
+arm_a = 23;
 arm_b = 47;
 arm_width = horn_radius*2+2;
-arm_thickness=3;
+arm_thickness=4.5;
 
 clear_blue=[0.5,0.5,1.0,0.75];
 
 phi = 0;
 theta = 180;
 
+mount_post_r = 3.5;
+mount_post_separation = 50;
+mount_post_height = 24;
+mount_post_x=15;
+mount_pin_position=3.5;
+mount_pin_r=1.5;
 
-pan_tilt_assembly();
+//pan_tilt_assembly();
+
+right_bracket1();
+//arm();
+
+module right_bracket1() {
+difference() {
+
+union() {
+hull() {
+translate([-servo_width/2,servo_length/2+xy_fudge,-servo_bracket_distance])
+cube(size=[servo_width,(servo_bracket_length-servo_length)/2-xy_fudge,servo_mount_height]);
+
+translate([mount_post_x,mount_post_separation/2,-servo_mount_height])
+cylinder(r=mount_post_r-xy_fudge,h=servo_mount_height,$fn=32);
+}
+translate([mount_post_x,mount_post_separation/2,-mount_post_height])
+cylinder(r=mount_post_r-xy_fudge,h=mount_post_height,$fn=32);
+}
+
+for(b = [screw_b/2,-screw_b/2])
+translate([b,screw_a/2,0])
+cylinder(r=servo_mount_hole_r,h=2*servo_height,center=true,$fn=32);
+
+translate([0,mount_post_separation/2,-mount_post_height+mount_pin_position])
+rotate([0,90,0])
+cylinder(h=200,r=mount_pin_r,center=true,$fn=32);
+}
+}
+
+
+module left_bracket1() {
+mirror([0,1,0])
+right_bracket1();
+}
 
 module pan_tilt_assembly() {
 
 	rotate(180)
-	translate([0,-servo_length/2+horn_offset,-servo_bracket_distance-horn_height])
+	translate([0,-servo_length/2+horn_offset,-servo_bracket_distance-horn_height]) {
 		servo_body();
+
+		color(clear_blue) {
+			right_bracket1();
+			left_bracket1();
+		}
+	}
 
 	rotate(theta) {
 		translate([0,0,-horn_height])
@@ -65,10 +104,6 @@ module pan_tilt_assembly() {
 			arm();
 	}
 }
-
-
-//pantiltbracket1();
-//arm();
 
 
 module arm() {
@@ -126,9 +161,6 @@ cylinder(r=arm_thickness,h=arm_width*2,center=true);
 }
 }
 	
-
-//servo();
-//pantiltbracket1();
 
 module pantiltbracket1() {
 difference() {

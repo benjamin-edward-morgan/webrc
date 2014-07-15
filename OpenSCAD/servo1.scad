@@ -13,14 +13,16 @@ screw_b = 10;
 
 horn_height=8;
 horn_thickness=2;
-horn_radius=10;
-horn_inner_radius=4;
+horn_radius=15;
+horn_inner_radius=6;
 horn_hole_radius=0.8;
-horn_hole_separation=3;
-horn_hole_position=6.5;
-horn_center_hole_radius = 2;
+horn_hole_separation=4;
+horn_hole_position=10;
+horn_center_hole_radius = 4;
 
 horn_offset = 9;
+
+//servo();
 
 module servo() {
 	color("grey")
