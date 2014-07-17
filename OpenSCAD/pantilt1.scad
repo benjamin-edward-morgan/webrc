@@ -31,7 +31,7 @@ mount_pin_r=1.5;
 
 //pan_tilt_assembly();
 
-right_bracket1();
+//right_bracket1();
 //arm();
 
 module right_bracket1() {

@@ -101,6 +101,16 @@
         <property name="innerControl" ref="speedLinearTransformControl"/>
     </bean>
 
+    <bean id="irControl" class="webrc.robot.control.GpioPinControl">
+        <property name="bus" value="1"/>
+        <property name="pin" value="2"/>
+    </bean>
+
+    <bean id="laserControl" class="webrc.robot.control.GpioPinControl">
+        <property name="bus" value="1"/>
+        <property name="pin" value="0"/>
+    </bean>
+
 
     <!--all top-level controls mapped to names-->
 
@@ -111,6 +121,8 @@
                 <entry key="tilt" value-ref="tiltInterpolationTransformControl" />
                 <entry key="steering" value-ref="steeringCubicTransformControl" />
                 <entry key="speed" value-ref="speedCubicTransformControl" />
+                <entry key="ir" value-ref="irControl"/>
+                <entry key="laser" value-ref="laserControl"/>
             </map>
         </property>
     </bean>
@@ -128,9 +140,10 @@
                 <value>battery_voltage</value>
                 <value>battery_percentage</value>
                 <value>signal</value>
+                <value>ir_status</value>
+                <value>laser_status</value>
             </set>
         </property>
-        <property name="port" value="8080"/>
     </bean>
 
 

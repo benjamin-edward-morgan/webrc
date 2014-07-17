@@ -16,12 +16,14 @@
 
     <!--Serves the UI web page and communicates with the browser-->
     <bean id="server" class = "webrc.server.EmbeddedServer">
-        <property name="port" value="8080"/>
+        <property name="port" value="5050"/>
         <property name="relay">
             <set>
                 <value>battery_voltage</value>
                 <value>battery_percentage</value>
                 <value>signal</value>
+                <value>ir_status</value>
+                <value>laser_status</value>
             </set>
         </property>
     </bean>
@@ -76,8 +78,8 @@
     <bean id="panLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
-        <constructor-arg index="2" value="0"/>
-        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="2" value="0.13"/>
+        <constructor-arg index="3" value="0.48"/>
         <constructor-arg index="4" ref="panPwmControl"/>
     </bean>
 
@@ -89,8 +91,8 @@
     <bean id="tiltLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
         <constructor-arg index="0" value="-100"/>
         <constructor-arg index="1" value="100"/>
-        <constructor-arg index="2" value="0"/>
-        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="2" value="0.13"/>
+        <constructor-arg index="3" value="0.48"/>
         <constructor-arg index="4" ref="tiltPwmControl"/>
     </bean>
 
@@ -135,6 +137,16 @@
         <constructor-arg index="4" ref="speedPwmControl"/>
     </bean>
 
+    <bean id="irControl" class="webrc.robot.control.GpioPinControl">
+        <property name="bus" value="1"/>
+        <property name="pin" value="2"/>
+    </bean>
+
+    <bean id="laserControl" class="webrc.robot.control.GpioPinControl">
+        <property name="bus" value="1"/>
+        <property name="pin" value="0"/>
+    </bean>
+
     <!--all top-level controls mapped to names-->
     <bean id="controls" class="webrc.robot.control.Controls">
         <property name="controls">
@@ -143,6 +155,8 @@
                 <entry key="tilt" value-ref="tiltLinearTransformControl" />
                 <entry key="steering" value-ref="steeringCubicTransformControl" />
                 <entry key="speed" value-ref="speedLimiterControl" />
+                <entry key="ir" value-ref="irControl"/>
+                <entry key="laser" value-ref="laserControl"/>
             </map>
         </property>
     </bean>

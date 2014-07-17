@@ -9,6 +9,9 @@ $(document).ready(
 			var camX = 0;
 			var camY = 0;
 
+			var irStatus = 0;
+			var laserStatus = 0;
+
 			var driveX_0 = 0;
 			var driveY_0 = 0;
 			var camX_0 = 0;
@@ -230,19 +233,29 @@ $(document).ready(
                 {
                     console.log("recieved: " + JSON.stringify(message));
 
-                    if(message.data.signal) {
+                    if(message.data.hasOwnProperty('signal')) {
                         var signal = message.data.signal;
                         updateWifiStatus(signal);
                     }
 
-                    if(message.data.battery_voltage) {
+                    if(message.data.hasOwnProperty('battery_voltage')) {
                         var voltage = message.data.battery_voltage;
                         updateBatteryVoltage(voltage);
                     }
 
-                    if(message.data.battery_percentage) {
+                    if(message.data.hasOwnProperty('battery_percentage')) {
                         var status = message.data.battery_percentage;
                         updateBatteryStatus(status);
+                    }
+
+                    if(message.data.hasOwnProperty('ir_status')) {
+                        var status = message.data.ir_status;
+                        updateIrStatus(status);
+                    }
+
+                    if(message.data.hasOwnProperty('laser_status')) {
+                        var status = message.data.laser_status;
+                        updateLaserStatus(status);
                     }
                 }
 
@@ -304,6 +317,59 @@ $(document).ready(
 
                 }
 
+                function updateIrStatus(status) {
+                    var button = document.getElementById("irbutton");
+
+                    if(status > 0) {
+                        button.innerHTML="IR - On";
+                        irStatus = 1;
+                    } else {
+                        button.innerHTML="IR - Off";
+                        irStatus = 0;
+                    }
+
+                }
+
+                function toggleIrStatus() {
+
+                    var dat = {};
+
+                    if(irStatus > 0) {
+                        dat['ir'] = 0;
+                    } else {
+                        dat['ir'] = 1;
+                    }
+
+                    cometd.publish('/data/up', dat);
+
+                }
+
+                function toggleLaserStatus() {
+
+                    var dat = {};
+
+                        if(laserStatus > 0) {
+                             dat['laser'] = 0;
+                        } else {
+                            dat['laser'] = 1;
+                        }
+
+                        cometd.publish('/data/up', dat);
+
+                }
+
+                function updateLaserStatus(status) {
+                    var button = document.getElementById("laserbutton");
+
+                    if(status > 0) {
+                        button.innerHTML="Laser - On";
+                        laserStatus = 1;
+                    } else {
+                        button.innerHTML="Laser - Off";
+                        laserStatus = 0;
+                    }
+                }
+
                 // Function that manages the connection status with the Bayeux server
                 var _connected = false;
                 function _metaConnect(message)
@@ -344,6 +410,11 @@ $(document).ready(
                 $(window).unload(function()
                 {
                     cometd.disconnect(true);
+                });
+
+                $(window).load(function() {
+                    document.getElementById("irbutton").onclick=toggleIrStatus;
+                    document.getElementById("laserbutton").onclick=toggleLaserStatus;
                 });
 
                 var cometURL = location.protocol + "//" + location.host + "/webrc/bayeux";
