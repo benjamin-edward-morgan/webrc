@@ -16,6 +16,13 @@
 
     <!-- sensors -->
 
+    <bean id="accelerometer" class="webrc.robot.sensor.ADXL345Sensor">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x53"/>
+        <property name="updatePeriod" value="100"/>
+        <property name="key" value="accelerometer"/>
+    </bean>
+
     <bean id="powerSensor" class="webrc.robot.sensor.INA219Sensor">
         <property name="bus" value="1"/>
         <property name="device" value="0x41"/>
