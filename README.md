@@ -77,6 +77,9 @@ network={
     }
 ```
 
+#####Set Up Wifi Hotspot
+follow directions at http://andypi.co.uk/?page_id=559
+
 #####Enable I2C
 * type `sudo nano /etc/modules`
 * append following lines
@@ -111,6 +114,9 @@ raspistill --nopreview -w 640 -h 480 -q 5 -o /tmp/stream/pic.jpg -tl 100 -t 9999
 LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer -i "input_file.so -f /tmp/stream -n pic.jpg" -o "output_http.so -w /usr/local/www"
 ```
 visit <ip address of pi>:8080/ to view stream and sample code
+
+#####Set up "Motion" for mjpeg streaming
+follow directions at http://www.codeproject.com/Articles/665518/Raspberry-Pi-as-low-cost-HD-surveillance-camera
 
 #####Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status
