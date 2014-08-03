@@ -28,7 +28,7 @@ img { border: 0; max-width: 100%; display: inline;}
 
 table { width:auto; border-collapse: collapse;border-spacing: 0; }
 
-#title { font-family: 'Audiowide', cursive; margin: 0 auto; display: inline; position: relative; text-align: left; padding: 50px;}
+#title { margin: 0 auto; display: inline; position: relative; text-align: left; padding: 50px;}
 
 /* Custom Styles */
 
