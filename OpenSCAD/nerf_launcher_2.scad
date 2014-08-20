@@ -64,7 +64,7 @@ stopPlateRadius=tubeOuterRadius+5*boltRadius;
 shaftLength = tubeHeight+5;
 shaftWidth = 4;
 shaftNotchSize = 2;
-shaftNotchPosition = 20+stopPlateThickness;
+shaftNotchPosition = 15+stopPlateThickness;
 
 module assembly() {
 
@@ -125,7 +125,7 @@ module spring_wall() {
 	}
 }
 	
-//plug_plug_clipi();
+//plug_plug_clip();
 module plug_plug_clip() {
 	union() {
 		translate([0,0,plugHeight/2])
