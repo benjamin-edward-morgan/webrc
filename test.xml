@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+
+    <bean id="voltageSensor" class="webrc.robot.sensor.ADS1015Sensor">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x48"/>
+        <property name="key" value="voltage"/>
+    </bean>
+
+    <context:annotation-config/>
+
+    <bean id="globalProperties"
+          class="webrc.robot.RobotProperties">
+        <property name="testMode" value="false"/>
+    </bean>
+
+    <bean id="i2c" class="webrc.robot.util.I2C"/>
+
+    <!--Brokers messages between publishers and subscribers-->
+    <bean id="messageService" class="webrc.robot.messaging.MessageService">
+    </bean>
+
+    <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+
+    <!--Serves the UI web page and communicates with the browser-->
+    <bean id="server" class = "webrc.server.EmbeddedServer">
+        <property name="relay">
+            <set>
+                <value>battery_voltage</value>
+                <value>battery_percentage</value>
+                <value>signal</value>
+                <value>ir_status</value>
+                <value>laser_status</value>
+            </set>
+        </property>
+    </bean>
+
+
+</beans>

@@ -99,7 +99,7 @@ nerfprojectile();
 
 }
 
-assembly();
+//assembly();
 
 //stop_plate();
 
@@ -123,6 +123,19 @@ module spring_wall() {
 		translate([0,0,-epsilon])
 		cylinder(r=springOuterR+xy_fudge,h=springWallHeight+3*epsilon);
 	}
+}
+
+//spring_trench();
+module spring_trench() {
+
+	translate([0,0,-springWallHeight])
+	difference() {
+		cylinder(r=springOuterR+xy_fudge,h=springWallHeight+epsilon);
+
+		translate([0,0,-epsilon])
+			cylinder(r=springInnerR-xy_fudge,h=springWallHeight+3*epsilon);
+	}
+
 }
 	
 //plug_plug_clip();
@@ -222,20 +235,19 @@ module shaft_notch() {
 }
 
 
-//stop_plate();
+stop_plate();
 module stop_plate() {
 
 	difference() {
-	union() {
 	cylinder(r=stopPlateRadius,h=stopPlateThickness);
 
 	translate([0,0,stopPlateThickness])
-	spring_wall();
-	}
+	spring_trench();
+	
 	cube(size=[shaftWidth+shaftClipSize*2+2*xy_fudge,shaftWidth+2*xy_fudge,stopPlateThickness*3],center=true);
 
 	for(i = [1 : nBolts])
-		rotate(i*(360/nBolts))
+		rotate(i*(360/nBolts)+45)
 		translate([tubeOuterRadius+3*boltRadius,0,0])
 			cylinder(r=boltRadius+xy_fudge,h=3*stopPlateThickness,center=true);	
 	}
