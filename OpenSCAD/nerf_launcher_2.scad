@@ -50,7 +50,7 @@ springWallHeight = 1;
 springWallThickness = 1;
 
 //handle
-handleRadius=10;
+handleRadius=7;
 
 //bolts
 nBolts = 4;
@@ -61,32 +61,269 @@ stopPlateThickness = 3;
 stopPlateRadius=tubeOuterRadius+5*boltRadius;
 
 //shaft
-shaftLength = tubeHeight+5;
+shaftLength = tubeHeight+10;
 shaftWidth = 4;
 shaftNotchSize = 2;
-shaftNotchPosition = 15+stopPlateThickness;
+shaftNotchPosition = 19+stopPlateThickness;
 
-module assembly() {
+//latch
+latchLength=23;
+latchWidth=8;
+latchHoleWidth=9;
+latchOffset=10;
+latchLipLength=2;
+latchLipHeight=5;
+
+//solenoid
+solenoidHeight=12;
+solenoidWidth=11;
+solenoidLength=20.5;
+solenoidShaftLength=29;
+solenoidR1=7/2;
+solenoidR2=2.5/2;
+solenoidR3=3/2;
+solenoidCapHeight=1;
+solenoidA=0.5;
+solenoidB=3.5;
+solenoidPosition=solenoidA;
+
+//brace
+braceThickness = 2;
+braceHeight=2;
+
+//solenoid backet
+solenoidTranslation=latchOffset;
+solenoidBracketClipSize=1;
+
+//latch clip
+latchClipX=12;
+latchClipR=1.2;
+
+//brace();
+module brace() {
+linear_extrude(height=braceHeight) {
+union() {
+for(i = [[0,0],[1,0]]) {
+mirror(i)
+polygon(points = [
+		[-epsilon,shaftNotchSize+braceThickness],
+		[latchWidth/2+xy_fudge,shaftNotchSize+braceThickness],
+		[latchWidth/2+xy_fudge+shaftNotchSize+braceThickness+epsilon,-epsilon],
+		[latchWidth/2+xy_fudge+epsilon,-epsilon],
+		[latchWidth/2+xy_fudge,shaftNotchSize+xy_fudge],
+		[-epsilon,shaftNotchSize+xy_fudge]
+		]);
+}}}}
 
 
-translate([0,0,springH1-shaftLength])
-shaft();
 
+//latch_clip();
+module latch_clip() {
+
+	translate([-latchClipX,0,0])
+	rotate([0,180,0])
+	translate([0,0,-epsilon])
+	cylinder(r1=latchClipR-epsilon, r2=latchClipR+shaftClipSize,h=shaftClipSize+epsilon);
+}
+
+
+//latch_clip_cut();
+module latch_clip_cut() {
+
+	translate([-latchClipX,0,0])
+	rotate([0,180,0])
+	hull() {
+	for(i=[0,2*latchLength])
+	translate([i,0,-epsilon])
+	cylinder(r1=latchClipR-epsilon+xy_fudge, r2=latchClipR+2*shaftClipSize+2*xy_fudge,h=2*shaftClipSize+epsilon+xy_fudge);
+	}
+}
+
+
+module solenoid_bracket() {
+union() {
+translate([solenoidTranslation,-solenoidHeight/2,0])
+cube(size=[solenoidLength+solenoidBracketClipSize+xy_fudge,solenoidHeight,stopPlateThickness]);
+
+translate([solenoidTranslation+solenoidLength+xy_fudge,0,0])
+rotate([-90,0,0])
+linear_extrude(height=solenoidHeight,center=true)
+polygon(points = [
+			[0,solenoidBracketClipSize],
+			[solenoidBracketClipSize,0],
+			[solenoidBracketClipSize,-epsilon],
+			[0,-epsilon]
+		]);
+
+translate([solenoidTranslation-xy_fudge,0,0])
+difference() {
+rotate([-90,0,180])
+linear_extrude(height=solenoidHeight,center=true)
+polygon(points = [
+			[0,solenoidBracketClipSize],
+			[solenoidBracketClipSize,0],
+			[solenoidBracketClipSize,-epsilon],
+			[0,-epsilon]
+		]);
+
+cube(size=[5*solenoidBracketClipSize,latchWidth+2*xy_fudge,5*solenoidBracketClipSize],center=true);
+}}
+}
+
+//latch();
+//shaft();
+stop_plate_brace();
+
+
+//latch_assembly();
+module latch_assembly() {
+
+
+translate([solenoidTranslation,0,0])
+rotate([0,180,0])
+	solenoid();
+
+
+color([1.0,0.0,0.0,0.5])
+translate([solenoidA-solenoidPosition,0,0])
+latch();
+
+
+
+translate([0,0,-shaftLength+shaftNotchPosition-shaftNotchSize-xy_fudge])
+  shaft();
 
 color([0.5,0.5,0.5,0.5])
-spring();
+stop_plate_brace();
+
+}
 
 
-translate([0,0,springH1+plugHeight/2]) {
-rotate([180,0,0])
+
+//solenoid();
+module solenoid() {
+
+	translate([-solenoidLength,-solenoidHeight/2,0]) {
+	color([0.1,0.1,0.8])
+	cube(size=[solenoidLength,solenoidHeight,solenoidWidth]);
+
+	translate([(latchLipLength-solenoidCapHeight)/2,0,0])
+	translate([solenoidPosition-solenoidShaftLength+solenoidCapHeight+solenoidLength,solenoidHeight/2,solenoidWidth/2])
+	rotate([0,90,0]) {
+	color([0.9,0.9,0.9]) {
+	translate([0,0,epsilon])
+		cylinder(r=solenoidR2,h=solenoidShaftLength-2*epsilon);
+	
+	translate([0,0,solenoidShaftLength-solenoidCapHeight])
+		cylinder(r=solenoidR3,h=solenoidCapHeight);	
+	}
+
+	color([0.05,0.05,0.05])
+	cylinder(r=solenoidR1,h=solenoidShaftLength/3);
+	}
+	}
+
+}
+
+
+//solenoid_lip_cut();
+module solenoid_lip_cut() {
+
+	translate([solenoidTranslation,0,0])
+rotate([0,180,0])
+	translate([-solenoidLength,-solenoidHeight/2,0]) {
+	translate([(latchLipLength-solenoidCapHeight)/2,0,0])
+	translate([solenoidA-solenoidShaftLength+solenoidCapHeight+solenoidLength,solenoidHeight/2,solenoidWidth/2])
+	rotate([0,90,0]) {
+
+	union () {
+	hull() {
+	translate([0,0,epsilon])
+		cylinder(r=solenoidR2+xy_fudge,h=solenoidShaftLength-2*epsilon);
+
+	translate([-30,0,epsilon])
+		cylinder(r=solenoidR2+xy_fudge,h=solenoidShaftLength-2*epsilon);
+	}	
+
+	hull() {
+	translate([0,0,solenoidShaftLength-solenoidCapHeight-xy_fudge/2])
+		cylinder(r=solenoidR3+xy_fudge,h=solenoidCapHeight+xy_fudge);	
+
+	
+	translate([-30,0,solenoidShaftLength-solenoidCapHeight-xy_fudge/2])
+		cylinder(r=solenoidR3+xy_fudge,h=solenoidCapHeight+xy_fudge);	
+
+	}}}}
+
+}
+
+//solenoid_lip_cut();
+//latch();
+module latch() {
+
+	difference() {
+
+	union() {
+	translate([latchOffset-latchLength/2-xy_fudge,0,-shaftNotchSize/2])
+	cube(size=[latchLength,latchWidth,shaftNotchSize],center=true);
+
+	translate([latchOffset-latchLipLength-xy_fudge,-latchWidth/2,-latchLipHeight-shaftNotchSize])
+	cube(size=[latchLipLength,latchWidth,latchLipHeight+epsilon]);
+	}
+
+
+	latch_cut();
+
+	solenoid_lip_cut();
+
+	translate([solenoidB-solenoidA,0,0])
+	latch_clip_cut();
+
+
+	}
+}
+
+
+//latch_cut();
+module latch_cut() {
+
+	translate([-shaftNotchSize,0,0])
+	rotate([-90,0,180])	
+	linear_extrude(height=shaftWidth+epsilon*2,center=true)
+	polygon(points = [
+			[-latchHoleWidth-xy_fudge,-epsilon],
+			[-latchHoleWidth-xy_fudge,shaftNotchSize+epsilon],
+			[xy_fudge-epsilon,shaftNotchSize+epsilon],
+			[xy_fudge+shaftNotchSize+epsilon,-epsilon]
+	]);
+
+}
+
+
+//assembly();
+module assembly() {
+
+/*
+rotate(-45)
+translate([0,0,springH1-shaftLength])
+shaft();
+*/
+
+//color([0.5,0.5,0.5,0.5])
+//spring();
+
+
+translate([0,0,shaftNotchPosition-plugHeight/2]) {
+rotate([180,0,-45])
 plug_plug_clip();
 color("black")
 oring();
 }
 
 
+rotate(-45)
 translate([0,0,-stopPlateThickness])
-stop_plate();
+latch_assembly();
 
 difference() {
 tube_interface_barrel();
@@ -184,7 +421,7 @@ module plug_clip_cut() {
 }
 
 
-
+//translate([0,0,-shaftLength])
 //shaft();
 module shaft() {
 
@@ -234,8 +471,22 @@ module shaft_notch() {
 	polygon(points=[[0,-epsilon],[0,shaftNotchSize],[shaftNotchSize,0],[shaftNotchSize,-epsilon]]);	
 }
 
-
+module stop_plate_brace() {
+union() {
 stop_plate();
+
+translate([shaftWidth/2+braceHeight+xy_fudge,0,0])
+rotate([0,270,0])
+rotate([0,0,90])
+brace();
+
+latch_clip();
+
+solenoid_bracket();
+}
+}
+
+//stop_plate();
 module stop_plate() {
 
 	difference() {

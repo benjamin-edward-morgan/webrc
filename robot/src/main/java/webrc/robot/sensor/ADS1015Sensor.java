@@ -32,10 +32,10 @@ public class ADS1015Sensor extends Sensor {
     private int device;
     private int updatePeriod = 100; //default to .1 second
 
+    private float voltage=6.114f; //todo: make programable via PGA gain
     private String key = "voltage";
 
     I2CDevice dev = null;
-    float lsb = (float)(2/Math.pow(2.0, 9.0));
 
     public void setBus(int bus) {
         this.bus = bus;
@@ -56,8 +56,6 @@ public class ADS1015Sensor extends Sensor {
     @PostConstruct
     public void init() {
 
-        System.out.println("asdfasdfasdf");
-
         if (!robotProperties.isTestMode()) {
             I2CBus i2cBus = i2c.geti2cBus(bus);
             if (i2c != null) {
@@ -65,11 +63,9 @@ public class ADS1015Sensor extends Sensor {
                 try {
                     dev = i2cBus.getDevice(device);
 
-                    System.out.println("asdfasdfasdf");
-
-                    //turn on the accelerometer, place it in 100hz mode
-                    byte[] bytes = new byte[]{Byte.parseByte("00000100",2), Byte.parseByte("10000011",2)};
+                    byte[] bytes = new byte[]{(byte)Integer.parseInt("01000000", 2), (byte)Integer.parseInt("10000011",2)};
                     i2c.writeBytesToRegister(dev, bytes, CONFIG);
+
 
 
                     begin();
@@ -81,6 +77,7 @@ public class ADS1015Sensor extends Sensor {
         }
     }
 
+    //todo: configure names for each input and poll all configured inputs
     private void begin() {
         Thread t = new Thread(new Runnable(){
             @Override
@@ -92,14 +89,26 @@ public class ADS1015Sensor extends Sensor {
 
                         byte[] bytes = new byte[2];
                         try {
-                            dev.read(CONVERSION, bytes, 0, 6);
+                            dev.read(CONVERSION, bytes, 0, 2);
 
-                            String value = Integer.toHexString(bytes[0]<<8 & bytes[1]);
+                            int intVal = (bytes[0]&0xff)<<8 | bytes[1]&0xff;
+
+                            String hexVal = Integer.toHexString(intVal);
+
+                            if(intVal>=0x8000) {
+                                intVal |= 0xFFFF0000;
+                            }
+
+                            float unitVal = (float)intVal/(0x7FF0);
+
+                            float voltageVal = unitVal*voltage;
+
+                            int distanceMM = (int)(voltageVal/(4.6/5120));
 
                             //log sensor readings
-                            blackbox.info(key+",{}", value);
+                            blackbox.info(key+",{},{},{}V,{}mm", hexVal, intVal,voltageVal, distanceMM);
 
-                            publishOne(key, value);
+                            publishOne(key, hexVal);
 
                         } catch (IOException e) {
                             e.printStackTrace();
