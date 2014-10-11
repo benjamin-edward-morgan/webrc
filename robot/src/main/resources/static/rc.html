@@ -3,7 +3,10 @@
 <head>
 	<title>DriveByPi</title>
 
+    <!--jquery-->
     <script src="jquery-1.11.0.js"></script>
+
+    <!--cometd-->
     <script src="cometd-namespace.js"></script>
     <script src="cometd-json.js"></script>
     <script src="Transport.js"></script>
@@ -18,7 +21,15 @@
 
 	<script src="rc.js"></script>
 	<script src="virtualjoystick.js"></script>
+
+    <!--threejs-->
+    <script src="three.min.js"></script>
+
+    <!--hud-->
+    <script src="hud.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="styles.css" />
+
 </head>
 <body>
 <script>
@@ -44,7 +55,8 @@
     </div>
 </div>
 <div id="container" align="center">
-    <img src="http://10.0.0.1:8081" height="100%" />
+    <img src="ponce.jpg" height="100%" />
+    <canvas id="overlayCanvas" height="100%" width="100%" style="position:absolute; left:0px; right:0px;">Your browser sucks</canvas>
 	<div id="controller-left">
 		<div class="wasd">
 			<div class="w button"><span>W</span></div>

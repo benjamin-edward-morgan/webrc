@@ -116,7 +116,7 @@ LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer -i "input_file.so -f /tmp/stream -n
 visit <ip address of pi>:8080/ to view stream and sample code
 
 #####Set up "Motion" for mjpeg streaming
-follow directions at http://www.codeproject.com/Articles/665518/Raspberry-Pi-as-low-cost-HD-surveillance-camera
+follow directions at http://www.codeproject.com/Articles/665518/Raspberry-Pi-as-low-cost-HD-surveillance-camera	
 
 #####Nifty command line functions
 * `ifconfig` and `iwconfig` tell you about the overall network and wifi status

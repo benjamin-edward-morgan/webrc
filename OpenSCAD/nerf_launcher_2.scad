@@ -50,7 +50,7 @@ springWallHeight = 1;
 springWallThickness = 1;
 
 //handle
-handleRadius=7;
+handleRadius=9;
 
 //bolts
 nBolts = 4;
@@ -64,7 +64,7 @@ stopPlateRadius=tubeOuterRadius+5*boltRadius;
 shaftLength = tubeHeight+10;
 shaftWidth = 4;
 shaftNotchSize = 2;
-shaftNotchPosition = 19+stopPlateThickness;
+shaftNotchPosition = 29+stopPlateThickness;
 
 //latch
 latchLength=23;
@@ -171,8 +171,8 @@ cube(size=[5*solenoidBracketClipSize,latchWidth+2*xy_fudge,5*solenoidBracketClip
 }
 
 //latch();
-//shaft();
-stop_plate_brace();
+shaft();
+//stop_plate_brace();
 
 
 //latch_assembly();
@@ -264,8 +264,8 @@ module latch() {
 	difference() {
 
 	union() {
-	translate([latchOffset-latchLength/2-xy_fudge,0,-shaftNotchSize/2])
-	cube(size=[latchLength,latchWidth,shaftNotchSize],center=true);
+	translate([latchOffset-latchLength/2-xy_fudge,0,-shaftNotchSize/2-xy_fudge/2])
+	cube(size=[latchLength,latchWidth,shaftNotchSize-xy_fudge],center=true);
 
 	translate([latchOffset-latchLipLength-xy_fudge,-latchWidth/2,-latchLipHeight-shaftNotchSize])
 	cube(size=[latchLipLength,latchWidth,latchLipHeight+epsilon]);
@@ -289,7 +289,7 @@ module latch_cut() {
 
 	translate([-shaftNotchSize,0,0])
 	rotate([-90,0,180])	
-	linear_extrude(height=shaftWidth+epsilon*2,center=true)
+	linear_extrude(height=shaftWidth+xy_fudge*2,center=true)
 	polygon(points = [
 			[-latchHoleWidth-xy_fudge,-epsilon],
 			[-latchHoleWidth-xy_fudge,shaftNotchSize+epsilon],

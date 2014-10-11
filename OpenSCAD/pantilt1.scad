@@ -29,7 +29,7 @@ mount_post_x=15;
 mount_pin_position=3.5;
 mount_pin_r=1.5;
 
-//pan_tilt_assembly();
+pan_tilt_assembly();
 
 //right_bracket1();
 //arm();
