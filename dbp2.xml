@@ -11,7 +11,7 @@
 
     <bean id="globalProperties"
           class="webrc.robot.RobotProperties">
-        <property name="testMode" value="true"/>
+        <property name="testMode" value="false"/>
     </bean>
 
     <bean id="i2c" class="webrc.robot.util.I2C"/>
@@ -103,16 +103,16 @@
         </property>
     </bean>
 
-    <bean id="testui" class="webrc.test.TestUI">
-        <property name="sensors">
-            <set>
-                <value>battery_voltage,11.1,12.46</value>
-                <value>battery_percentage,-1,100</value>
-                <value>signal,-1,100</value>
+    <!--<bean id="testui" class="webrc.test.TestUI">-->
+        <!--<property name="sensors">-->
+            <!--<set>-->
+                <!--<value>battery_voltage,11.1,12.46</value>-->
+                <!--<value>battery_percentage,-1,100</value>-->
+                <!--<value>signal,-1,100</value>-->
 
-            </set>
-        </property>
-    </bean>
+            <!--</set>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 
 </beans>
