@@ -11,7 +11,7 @@
 
     <bean id="globalProperties"
           class="webrc.robot.RobotProperties">
-        <property name="testMode" value="false"/>
+        <property name="testMode" value="true"/>
     </bean>
 
     <bean id="i2c" class="webrc.robot.util.I2C"/>
@@ -98,7 +98,18 @@
                 <value>battery_voltage</value>
                 <value>battery_percentage</value>
                 <value>signal</value>
-                <value>laser_status</value>
+                <value>laser.PCA9685pinControl_status</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="testui" class="webrc.test.TestUI">
+        <property name="sensors">
+            <set>
+                <value>battery_voltage,11.1,12.46</value>
+                <value>battery_percentage,-1,100</value>
+                <value>signal,-1,100</value>
+
             </set>
         </property>
     </bean>
