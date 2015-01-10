@@ -1,13 +1,19 @@
 package webrc.robot.control;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import webrc.robot.messaging.MessageService;
 import webrc.robot.util.Conversion;
 import webrc.robot.util.I2C;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PCA9685pinControl extends Control {
 
+
+    @Autowired
+    MessageService messageService;
 
     PCA9685Control pca9685Control;
     int pin;
@@ -49,6 +55,10 @@ public class PCA9685pinControl extends Control {
 
         i2c.writeBytesToRegister(pca9685Control.dev, offbytes, PCA9685Control.LED_ON_LOW(pin));
         i2c.writeBytesToRegister(pca9685Control.dev, onbytes, PCA9685Control.LED_OFF_LOW(pin));
+
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put(key + "_status", value);
+        messageService.publish(values);
     }
 
     public void setPin(int pin) {

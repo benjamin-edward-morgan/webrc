@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           classpath:org/springframework/beans/factory/xml/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="globalProperties"
+          class="webrc.robot.RobotProperties">
+        <property name="testMode" value="false"/>
+    </bean>
+
+    <bean id="i2c" class="webrc.robot.util.I2C"/>
+
+    <!--PWM Controller Board-->
+    <bean id="PwmControl0" class="webrc.robot.control.PCA9685Control">
+        <property name="bus" value="1"/>
+        <property name="device" value="0x40"/>
+        <property name="prescale" value="30"/>
+    </bean>
+
+
+
+    <!--Steering-->
+    <bean id="steeringLeftControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="0"/>
+    </bean>
+    <bean id="steeringRightControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="1"/>
+    </bean>
+    <bean id="steeringHbridge" class="webrc.robot.control.HBridgeControl">
+        <property name="innerController1" ref="steeringLeftControl"/>
+        <property name="innerController2" ref="steeringRightControl"/>
+    </bean>
+    <bean id="steeringLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0"/>
+        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="4" ref="steeringHbridge"/>
+    </bean>
+
+
+    <!--Speed Servo-->
+    <bean id="speedFwdControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="2"/>
+    </bean>
+    <bean id="speedBckwdControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="3"/>
+    </bean>
+    <bean id="speedHbridge" class="webrc.robot.control.HBridgeControl">
+        <property name="innerController1" ref="speedFwdControl"/>
+        <property name="innerController2" ref="speedBckwdControl"/>
+    </bean>
+    <bean id="speedLinearTransformControl" class="webrc.robot.control.LinearTransformControl">
+        <constructor-arg index="0" value="-100"/>
+        <constructor-arg index="1" value="100"/>
+        <constructor-arg index="2" value="0"/>
+        <constructor-arg index="3" value="1"/>
+        <constructor-arg index="4" ref="speedHbridge"/>
+    </bean>
+
+    <bean id="headlightsControl" class="webrc.robot.control.PCA9685pinControl">
+        <property name="pca9685Control" ref="PwmControl0"/>
+        <property name="pin" value="4"/>
+    </bean>
+
+    <!--all top-level controls mapped to names-->
+
+    <bean id="controls" class="webrc.robot.control.Controls">
+        <property name="controls">
+            <map>
+                <entry key="steering" value-ref="steeringLinearTransformControl" />
+                <entry key="speed" value-ref="speedLinearTransformControl" />
+                <entry key="laser" value-ref="headlightsControl"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--Brokers messages between publishers and subscribers-->
+    <bean id="messageService" class="webrc.robot.messaging.MessageService">
+    </bean>
+
+    <bean id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+
+    <!--Serves the UI web page and communicates with the browser-->
+    <bean id="server" class = "webrc.server.EmbeddedServer">
+        <property name="relay">
+            <set>
+                <value>battery_voltage</value>
+                <value>battery_percentage</value>
+                <value>signal</value>
+                <value>laser.PCA9685pinControl_status</value>
+            </set>
+        </property>
+    </bean>
+
+    <!--<bean id="testui" class="webrc.test.TestUI">-->
+        <!--<property name="sensors">-->
+            <!--<set>-->
+                <!--<value>battery_voltage,11.1,12.46</value>-->
+                <!--<value>battery_percentage,-1,100</value>-->
+                <!--<value>signal,-1,100</value>-->
+
+            <!--</set>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+
+</beans>

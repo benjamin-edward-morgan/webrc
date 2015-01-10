@@ -253,9 +253,9 @@ $(document).ready(
                         updateIrStatus(status);
                     }
 
-                    if(message.data.hasOwnProperty('laser_status')) {
-                        var status = message.data.laser_status;
-                        updateLaserStatus(status);
+                    if(message.data.hasOwnProperty('laser.PCA9685pinControl_status')) {
+                        //var status = message.data.getProperty('laser.PCA9685pinControl_status');
+                        updateLaserStatus(0.0);
                     }
                 }
 
@@ -361,12 +361,12 @@ $(document).ready(
                 function updateLaserStatus(status) {
                     var button = document.getElementById("laserbutton");
 
-                    if(status > 0) {
-                        button.innerHTML="Laser - On";
-                        laserStatus = 1;
-                    } else {
+                    if(laserStatus > 0) {
                         button.innerHTML="Laser - Off";
                         laserStatus = 0;
+                    } else {
+                        button.innerHTML="Laser - On";
+                        laserStatus = 1;
                     }
                 }
 
