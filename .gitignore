@@ -6,6 +6,4 @@
 *.ear
 .idea
 *.iml
-common/target/*
-server/target/*
-robot/target/*
+robot/target
